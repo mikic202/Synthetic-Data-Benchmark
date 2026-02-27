@@ -2,6 +2,8 @@ import pandas as pd
 from scipy.spatial import Delaunay, ConvexHull
 from sklearn.decomposition import PCA
 import numpy as np
+from tabicl import TabICLClassifier, InferenceConfig
+import torch
 
 
 def calculate_convex_hull_coverage(
@@ -21,5 +23,16 @@ def calculate_convex_hull_coverage(
 
 
 def encode_data_to_contionous_space(data: pd.DataFrame):
-    # TODO
-    return data
+    model = TabICLClassifier().fit(data, [0] * len(data))
+    inference_config = InferenceConfig()
+    data_tensor = torch.tensor(data.values, dtype=torch.float32).unsqueeze(0)
+    representations = model.model_.row_interactor(
+        model.model_.col_embedder(
+            data_tensor,
+            train_size=len(data_tensor),
+            feature_shuffles=None,
+            mgr_config=inference_config.COL_CONFIG,
+        ),
+        mgr_config=inference_config.ROW_CONFIG,
+    )
+    return representations.squeeze(0).cpu().detach().numpy()
