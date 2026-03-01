@@ -1,6 +1,5 @@
 import pandas as pd
 from scipy.stats import kstest
-import numpy as np
 
 
 def calculate_dataset_statistics(dataset: pd.DataFrame) -> pd.DataFrame:

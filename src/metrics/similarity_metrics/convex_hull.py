@@ -13,8 +13,8 @@ def calculate_convex_hull_coverage(
     synthetic_data = encode_data_to_contionous_space(synthetic_data)
 
     pca = PCA(n_components=min(7, real_data.shape[1] - 1))
-    convex_hull = ConvexHull(transformed_points)
     transformed_points = pca.fit_transform(real_data)
+    convex_hull = ConvexHull(transformed_points)
 
     transformed_synthetic_points = pca.transform(synthetic_data)
     delaunay = Delaunay(convex_hull.points[convex_hull.vertices])

@@ -1,5 +1,6 @@
 import torch
 import pandas as pd
+import numpy as np
 from nflows.transforms.base import CompositeTransform
 from nflows.transforms.permutations import RandomPermutation
 from nflows.transforms.autoregressive import (
@@ -112,7 +113,7 @@ class NeuralSplineFlowsGenerator:
         n_samples: int,
         balance_classes: bool,
         indices: list[int] | None = None,
-        **kwargs
+        **kwargs,
     ):
         data = X_train.copy()
         data["target"] = y_train

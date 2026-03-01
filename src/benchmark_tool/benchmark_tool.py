@@ -21,3 +21,4 @@ def get_model_class(args):
 def main():
     args = parse_args()
     generator_model_class = get_model_class(args)
+    print(generator_model_class)
