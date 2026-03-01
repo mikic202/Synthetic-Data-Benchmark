@@ -5,7 +5,9 @@ from src.model_wrappers.ctgan_generator import CTGANGenerator
 from src.test_datasets import clasification_datasets, regression_datasets
 from src.metrics.privacy_metrics import k_anonimity
 import pandas as pd
-from typing import Callable
+import datetime
+from pathlib import Path
+import json
 
 
 AVAILABLE_CLASSIFICATION_DATASETS = {
@@ -68,10 +70,21 @@ def main():
     args = parse_args()
     generator_model_class = get_model_class(args)
     model = generator_model_class()
+    current_output_path: Path = args.output_dir / datetime.datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
     for dataset_name, dataset_getter in AVAILABLE_CLASSIFICATION_DATASETS.items():
-        for _ in range(args.repetitions_number):
+        (current_output_path / dataset_name).mkdir(exist_ok=True, parents=True)
+        for run_number in range(args.repetitions_number):
+            current_run_results = {}
             train, test = dataset_getter()
             synth = generate_samples(
                 train, clasification_datasets.CLASYFICATION_TARGET, model
             )
-            print(k_anonimity.calculate_k_anonimity_for_datset(synth))
+            current_run_results["k_anonimity"] = int(
+                k_anonimity.calculate_k_anonimity_for_datset(synth)
+            )
+            with open(
+                (current_output_path / f"{dataset_name}/{run_number}.json"), "w"
+            ) as json_file:
+                json.dump(current_run_results, json_file)
