@@ -20,4 +20,12 @@ def parse_args():
         help="Choose which generator type needs to be benchamrked",
     )
 
+    parser.add_argument(
+        "-n",
+        "--repetitions-number",
+        type=int,
+        default=5,
+        help="Number of repetitions for each metric",
+    )
+
     return parser.parse_args()
