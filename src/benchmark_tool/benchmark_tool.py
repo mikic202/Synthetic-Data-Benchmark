@@ -3,11 +3,7 @@ from src.model_wrappers.full_tabpfn_gen import FullTabpfnGen
 from src.model_wrappers.smote_generator import SmoteGenerator
 from src.model_wrappers.ctgan_generator import CTGANGenerator
 from src.test_datasets import clasification_datasets, regression_datasets
-from src.metrics.privacy_metrics import (
-    k_anonimity,
-    unlinkability,
-    distance_to_nearest_neighbour,
-)
+from src.benchmark_tool import metric_wrappers
 import pandas as pd
 import datetime
 from pathlib import Path
@@ -50,15 +46,11 @@ def get_model_class(args):
 def get_metrics_to_compute(args):
     metrics = {}
     if args.k_anonimity:
-        metrics["k-anonimity"] = lambda real, _: float(
-            k_anonimity.calculate_k_anonimity_for_datset(real)
-        )
+        metrics["k-anonimity"] = metric_wrappers.KAnonimity
     if args.unlinkability:
-        metrics["unlinkability"] = unlinkability.calculate_unlinkability
+        metrics["unlinkability"] = metric_wrappers.Unlinkability
     if args.distance_to_nearest:
-        metrics["distance-to-nearest"] = (
-            distance_to_nearest_neighbour.calculate_distance_toNearest_record
-        )
+        metrics["distance-to-nearest"] = metric_wrappers.DistanceToNearestNeighbour
     return metrics
 
 
@@ -102,7 +94,9 @@ def main():
             )
             metrics = get_metrics_to_compute(args)
             for metric_name in metrics:
-                current_run_results[metric_name] = metrics[metric_name](train, synth)
+                current_run_results[metric_name] = metrics[metric_name](
+                    synth, train, test, clasification_datasets.CLASYFICATION_TARGET
+                )
             with open(
                 (current_output_path / f"{dataset_name}/{run_number}.json"), "w"
             ) as json_file:
