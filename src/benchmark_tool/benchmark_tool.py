@@ -3,7 +3,11 @@ from src.model_wrappers.full_tabpfn_gen import FullTabpfnGen
 from src.model_wrappers.smote_generator import SmoteGenerator
 from src.model_wrappers.ctgan_generator import CTGANGenerator
 from src.test_datasets import clasification_datasets, regression_datasets
-from src.metrics.privacy_metrics import k_anonimity
+from src.metrics.privacy_metrics import (
+    k_anonimity,
+    unlinkability,
+    distance_to_nearest_neighbour,
+)
 import pandas as pd
 import datetime
 from pathlib import Path
@@ -41,6 +45,21 @@ def get_model_class(args):
             return FullTabpfnGen
         case _:
             raise Exception("Chosen generator type is incorrect")
+
+
+def get_metrics_to_compute(args):
+    metrics = {}
+    if args.k_anonimity:
+        metrics["k-anonimity"] = lambda real, _: float(
+            k_anonimity.calculate_k_anonimity_for_datset(real)
+        )
+    if args.unlinkability:
+        metrics["unlinkability"] = unlinkability.calculate_unlinkability
+    if args.distance_to_nearest:
+        metrics["distance-to-nearest"] = (
+            distance_to_nearest_neighbour.calculate_distance_toNearest_record
+        )
+    return metrics
 
 
 def generate_samples(
@@ -81,9 +100,9 @@ def main():
             synth = generate_samples(
                 train, clasification_datasets.CLASYFICATION_TARGET, model
             )
-            current_run_results["k_anonimity"] = int(
-                k_anonimity.calculate_k_anonimity_for_datset(synth)
-            )
+            metrics = get_metrics_to_compute(args)
+            for metric_name in metrics:
+                current_run_results[metric_name] = metrics[metric_name](train, synth)
             with open(
                 (current_output_path / f"{dataset_name}/{run_number}.json"), "w"
             ) as json_file:

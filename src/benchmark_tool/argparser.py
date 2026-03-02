@@ -27,5 +27,20 @@ def parse_args():
         default=5,
         help="Number of repetitions for each metric",
     )
+    parser.add_argument(
+        "-k", "--k-anonimity", action="store_true", help="Compute k-anonimity metric"
+    )
+    parser.add_argument(
+        "-u",
+        "--unlinkability",
+        action="store_true",
+        help="Compute unlinkability metric",
+    )
+    parser.add_argument(
+        "-d",
+        "--distance-to-nearest",
+        action="store_true",
+        help="Compute distance to nearest neighbour metric",
+    )
 
     return parser.parse_args()
