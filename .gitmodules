@@ -1,0 +1,3 @@
+[submodule "external/tab_pfn_gen"]
+	path = external/tab_pfn_gen
+	url = git@github.com:mikic202/TabPFGen.git
