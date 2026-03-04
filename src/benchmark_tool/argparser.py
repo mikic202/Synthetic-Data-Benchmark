@@ -48,5 +48,17 @@ def parse_args():
         action="store_true",
         help="Compute dataset statistics",
     )
+    parser.add_argument(
+        "-t",
+        "--tree-depth-precision-relation",
+        action="store_true",
+        help="Compute relation between tree depth and precision",
+    )
+    parser.add_argument(
+        "-a",
+        "--area-under-curve",
+        action="store_true",
+        help="Compute the area under curve metric",
+    )
 
     return parser.parse_args()

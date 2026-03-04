@@ -53,6 +53,10 @@ def get_metrics_to_compute(args):
         metrics["distance-to-nearest"] = metric_wrappers.DistanceToNearestNeighbour
     if args.dataset_statistics:
         metrics["dataset-statistics"] = metric_wrappers.DatasetStatistics
+    if args.tree_depth_precision_relation:
+        metrics["tree-depth-precision-relation"] = metric_wrappers.MinimalTree
+    if args.area_under_curve:
+        metrics["area-under-curve"] = metric_wrappers.ModelAuc
     return metrics
 
 

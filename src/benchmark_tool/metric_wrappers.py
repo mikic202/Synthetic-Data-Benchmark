@@ -6,6 +6,7 @@ from src.metrics.privacy_metrics import (
     distance_to_nearest_neighbour,
 )
 from src.metrics.quality_metrics import dataset_statistics
+from src.metrics.difficulty_metrics import minimal_tree, model_auc
 
 
 class MetricWrapper(ABC):
@@ -44,3 +45,29 @@ class DatasetStatistics(MetricWrapper):
     @staticmethod
     def __call__(synthetic: pd.DataFrame, *args, **kwargs):
         return dataset_statistics.calculate_dataset_statistics(synthetic)
+
+
+class MinimalTree(MetricWrapper):
+    @staticmethod
+    def __call__(
+        synthetic: pd.DataFrame, real_test: pd.DataFrame, target: str, *args, **kwargs
+    ):
+        synth_x = synthetic.drop(target, axis=1)
+        synth_y = synthetic[target]
+        test_x = real_test.drop(target, axis=1)
+        test_y = real_test[target]
+        return minimal_tree.calculate_ralation_between_dree_depth_and_accuaracy(
+            synth_x, synth_y, test_x, test_y
+        )
+
+
+class ModelAuc(MetricWrapper):
+    @staticmethod
+    def __call__(
+        synthetic: pd.DataFrame, real_test: pd.DataFrame, target: str, *args, **kwargs
+    ):
+        synth_x = synthetic.drop(target, axis=1)
+        synth_y = synthetic[target]
+        test_x = real_test.drop(target, axis=1)
+        test_y = real_test[target]
+        return model_auc.calculate_auc(synth_x, synth_y, test_x, test_y)
