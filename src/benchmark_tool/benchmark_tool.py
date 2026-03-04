@@ -57,6 +57,10 @@ def get_metrics_to_compute(args):
         metrics["tree-depth-precision-relation"] = metric_wrappers.MinimalTree
     if args.area_under_curve:
         metrics["area-under-curve"] = metric_wrappers.ModelAuc
+    if args.convex_hull:
+        metrics["convex-hull"] = metric_wrappers.ConvexHull
+    if args.svn_discrimination:
+        metrics["svn-discrimination"] = metric_wrappers.Discrimination
     return metrics
 
 

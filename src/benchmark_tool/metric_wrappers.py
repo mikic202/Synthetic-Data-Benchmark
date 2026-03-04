@@ -7,6 +7,7 @@ from src.metrics.privacy_metrics import (
 )
 from src.metrics.quality_metrics import dataset_statistics
 from src.metrics.difficulty_metrics import minimal_tree, model_auc
+from src.metrics.similarity_metrics import convex_hull, discriminator
 
 
 class MetricWrapper(ABC):
@@ -71,3 +72,31 @@ class ModelAuc(MetricWrapper):
         test_x = real_test.drop(target, axis=1)
         test_y = real_test[target]
         return model_auc.calculate_auc(synth_x, synth_y, test_x, test_y)
+
+
+class ConvexHull(MetricWrapper):
+    @staticmethod
+    def __call__(
+        synthetic: pd.DataFrame,
+        real_train: pd.DataFrame,
+        real_test: pd.DataFrame,
+        *args,
+        **kwargs,
+    ):
+        return convex_hull.calculate_convex_hull_coverage(
+            pd.concat([real_test, real_train]), synthetic
+        )
+
+
+class Discrimination(MetricWrapper):
+    @staticmethod
+    def __call__(
+        synthetic: pd.DataFrame,
+        real_train: pd.DataFrame,
+        real_test: pd.DataFrame,
+        *args,
+        **kwargs,
+    ):
+        return discriminator.measure_how_well_svn_distinguishes_real_data(
+            pd.concat([real_test, real_train]), synthetic
+        )

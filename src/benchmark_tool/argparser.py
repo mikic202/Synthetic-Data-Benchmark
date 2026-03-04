@@ -60,5 +60,17 @@ def parse_args():
         action="store_true",
         help="Compute the area under curve metric",
     )
+    parser.add_argument(
+        "-c",
+        "--convex-hull",
+        action="store_true",
+        help="Compute convex hull coverage",
+    )
+    parser.add_argument(
+        "-ds",
+        "--svn-discrimination",
+        action="store_true",
+        help="Compute how well svn discriminates examples",
+    )
 
     return parser.parse_args()
