@@ -5,6 +5,7 @@ from src.metrics.privacy_metrics import (
     unlinkability,
     distance_to_nearest_neighbour,
 )
+from src.metrics.quality_metrics import dataset_statistics
 
 
 class MetricWrapper(ABC):
@@ -37,3 +38,9 @@ class DistanceToNearestNeighbour(MetricWrapper):
         return distance_to_nearest_neighbour.calculate_distance_toNearest_record(
             synthetic, real_train
         )
+
+
+class DatasetStatistics(MetricWrapper):
+    @staticmethod
+    def __call__(synthetic: pd.DataFrame, *args, **kwargs):
+        return dataset_statistics.calculate_dataset_statistics(synthetic)

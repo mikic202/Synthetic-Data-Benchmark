@@ -42,5 +42,11 @@ def parse_args():
         action="store_true",
         help="Compute distance to nearest neighbour metric",
     )
+    parser.add_argument(
+        "-s",
+        "--dataset-statistics",
+        action="store_true",
+        help="Compute dataset statistics",
+    )
 
     return parser.parse_args()

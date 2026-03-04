@@ -51,6 +51,8 @@ def get_metrics_to_compute(args):
         metrics["unlinkability"] = metric_wrappers.Unlinkability
     if args.distance_to_nearest:
         metrics["distance-to-nearest"] = metric_wrappers.DistanceToNearestNeighbour
+    if args.dataset_statistics:
+        metrics["dataset-statistics"] = metric_wrappers.DatasetStatistics
     return metrics
 
 
