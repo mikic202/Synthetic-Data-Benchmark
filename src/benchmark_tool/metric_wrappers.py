@@ -71,7 +71,13 @@ class ModelAuc(MetricWrapper):
         synth_y = synthetic[target]
         test_x = real_test.drop(target, axis=1)
         test_y = real_test[target]
-        return model_auc.calculate_auc(synth_x, synth_y, test_x, test_y)
+        if (
+            len(test_y.unique())
+            < minimal_tree.NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION
+        ):
+            return model_auc.calculate_auc(synth_x, synth_y, test_x, test_y)
+        else:
+            raise NotImplementedError("AUC for Regression is not implemented")
 
 
 class ConvexHull(MetricWrapper):
