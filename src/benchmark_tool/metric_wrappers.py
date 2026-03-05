@@ -11,8 +11,8 @@ from src.metrics.similarity_metrics import convex_hull, discriminator
 
 
 class MetricWrapper(ABC):
-    @abstractmethod
     @staticmethod
+    @abstractmethod
     def __call__(
         synthetic: pd.DataFrame,
         real_train: pd.DataFrame,

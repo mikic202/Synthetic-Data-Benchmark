@@ -19,7 +19,7 @@ def calculate_ralation_between_dree_depth_and_accuaracy(
     else:
         tree_type = tree.DecisionTreeClassifier
     for tree_depth in range(1, MAXIMUM_TREE_DEPTH + 1):
-        decision_tree = tree_type(tree_depth=tree_depth)
+        decision_tree = tree_type(max_depth=tree_depth)
         decision_tree.fit(synthetic_x, synthetic_y)
         accuracy_for_tree_depth[tree_depth] = decision_tree.score(real_x, real_y)
 
