@@ -46,21 +46,21 @@ def get_model_class(args):
 def get_metrics_to_compute(args):
     metrics = {}
     if args.k_anonimity:
-        metrics["k-anonimity"] = metric_wrappers.KAnonimity
+        metrics["k-anonimity"] = metric_wrappers.KAnonimity()
     if args.unlinkability:
-        metrics["unlinkability"] = metric_wrappers.Unlinkability
+        metrics["unlinkability"] = metric_wrappers.Unlinkability()
     if args.distance_to_nearest:
-        metrics["distance-to-nearest"] = metric_wrappers.DistanceToNearestNeighbour
+        metrics["distance-to-nearest"] = metric_wrappers.DistanceToNearestNeighbour()
     if args.dataset_statistics:
-        metrics["dataset-statistics"] = metric_wrappers.DatasetStatistics
+        metrics["dataset-statistics"] = metric_wrappers.DatasetStatistics()
     if args.tree_depth_precision_relation:
-        metrics["tree-depth-precision-relation"] = metric_wrappers.MinimalTree
+        metrics["tree-depth-precision-relation"] = metric_wrappers.MinimalTree()
     if args.area_under_curve:
-        metrics["area-under-curve"] = metric_wrappers.ModelAuc
+        metrics["area-under-curve"] = metric_wrappers.ModelAuc()
     if args.convex_hull:
-        metrics["convex-hull"] = metric_wrappers.ConvexHull
+        metrics["convex-hull"] = metric_wrappers.ConvexHull()
     if args.svn_discrimination:
-        metrics["svn-discrimination"] = metric_wrappers.Discrimination
+        metrics["svn-discrimination"] = metric_wrappers.Discrimination()
     return metrics
 
 
@@ -102,10 +102,32 @@ def main():
             synth = generate_samples(
                 train, clasification_datasets.CLASYFICATION_TARGET, model
             )
+            metrics: list[metric_wrappers.MetricWrapper] = get_metrics_to_compute(args)
+            for metric_name in metrics:
+                current_run_results[metric_name] = metrics[metric_name](
+                    synthetic=synth,
+                    real_train=train,
+                    real_test=test,
+                    target=clasification_datasets.CLASYFICATION_TARGET,
+                )
+            with open(
+                (current_output_path / f"{dataset_name}/{run_number}.json"), "w"
+            ) as json_file:
+                json.dump(current_run_results, json_file)
+
+    for dataset_name, dataset_getter in AVALIABLE_REGRESSION_DATASETS.items():
+        (current_output_path / dataset_name).mkdir(exist_ok=True, parents=True)
+        for run_number in range(args.repetitions_number):
+            current_run_results = {}
+            train, test = dataset_getter()
+            synth = generate_samples(train, regression_datasets.REGRESION_TARGET, model)
             metrics = get_metrics_to_compute(args)
             for metric_name in metrics:
                 current_run_results[metric_name] = metrics[metric_name](
-                    synth, train, test, clasification_datasets.CLASYFICATION_TARGET
+                    synthetic=synth,
+                    real_train=train,
+                    real_test=test,
+                    target=regression_datasets.REGRESION_TARGET,
                 )
             with open(
                 (current_output_path / f"{dataset_name}/{run_number}.json"), "w"
