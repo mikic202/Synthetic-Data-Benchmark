@@ -8,6 +8,12 @@ import pandas as pd
 import datetime
 from pathlib import Path
 import json
+from external.tab_pfn_gen.src.tabpfgen.tabpfgen import (
+    TabPFGenRegressor,
+    TabPFGenClassifier,
+    TabICLClassifier,
+)
+from typing import Callable
 
 
 AVAILABLE_CLASSIFICATION_DATASETS = {
@@ -29,16 +35,36 @@ AVALIABLE_REGRESSION_DATASETS = {
 }
 
 
-def get_model_class(args):
+def get_clasification_model(args):
     match args.generator_type.lower():
-        case "tabiclgen":
-            pass
         case "smote":
-            return SmoteGenerator
+            return SmoteGenerator()
         case "ctgan":
-            return CTGANGenerator
+            return CTGANGenerator()
         case "tabpfnunsupervised":
-            return FullTabpfnGen
+            return FullTabpfnGen()
+        case "tabiclgen":
+            return TabPFGenClassifier(
+                n_sgld_steps=100, clasifier_class=TabICLClassifier
+            )
+        case "tabpfngen":
+            return TabPFGenClassifier(n_sgld_steps=100)
+        case _:
+            raise Exception("Chosen generator type is incorrect")
+
+
+def get_regression_model(args):
+    match args.generator_type.lower():
+        case "smote":
+            return SmoteGenerator()
+        case "ctgan":
+            return CTGANGenerator()
+        case "tabpfnunsupervised":
+            return FullTabpfnGen()
+        case "tabiclgen":
+            return TabPFGenRegressor(n_sgld_steps=100, clasifier_class=TabICLClassifier)
+        case "tabpfngen":
+            return TabPFGenRegressor(n_sgld_steps=100)
         case _:
             raise Exception("Chosen generator type is incorrect")
 
@@ -87,49 +113,57 @@ def generate_samples(
     return synth_x
 
 
-def main():
-    args = parse_args()
-    generator_model_class = get_model_class(args)
-    model = generator_model_class()
-    current_output_path: Path = args.output_dir / datetime.datetime.now().strftime(
-        "%Y-%m-%d %H:%M:%S"
-    )
-    for dataset_name, dataset_getter in AVAILABLE_CLASSIFICATION_DATASETS.items():
+def generate_model_metrics(
+    model,
+    datasets: dict[str, Callable],
+    current_output_path: Path,
+    target: str,
+    metrics: list[metric_wrappers.MetricWrapper],
+    number_of_repetitions: int,
+):
+    for dataset_name, dataset_getter in datasets.items():
         (current_output_path / dataset_name).mkdir(exist_ok=True, parents=True)
-        for run_number in range(args.repetitions_number):
+        for run_number in range(number_of_repetitions):
             current_run_results = {}
             train, test = dataset_getter()
-            synth = generate_samples(
-                train, clasification_datasets.CLASYFICATION_TARGET, model
-            )
-            metrics: list[metric_wrappers.MetricWrapper] = get_metrics_to_compute(args)
+            synth = generate_samples(train, target, model)
             for metric_name in metrics:
                 current_run_results[metric_name] = metrics[metric_name](
                     synthetic=synth,
                     real_train=train,
                     real_test=test,
-                    target=clasification_datasets.CLASYFICATION_TARGET,
+                    target=target,
                 )
             with open(
                 (current_output_path / f"{dataset_name}/{run_number}.json"), "w"
             ) as json_file:
                 json.dump(current_run_results, json_file)
 
-    for dataset_name, dataset_getter in AVALIABLE_REGRESSION_DATASETS.items():
-        (current_output_path / dataset_name).mkdir(exist_ok=True, parents=True)
-        for run_number in range(args.repetitions_number):
-            current_run_results = {}
-            train, test = dataset_getter()
-            synth = generate_samples(train, regression_datasets.REGRESION_TARGET, model)
-            metrics = get_metrics_to_compute(args)
-            for metric_name in metrics:
-                current_run_results[metric_name] = metrics[metric_name](
-                    synthetic=synth,
-                    real_train=train,
-                    real_test=test,
-                    target=regression_datasets.REGRESION_TARGET,
-                )
-            with open(
-                (current_output_path / f"{dataset_name}/{run_number}.json"), "w"
-            ) as json_file:
-                json.dump(current_run_results, json_file)
+
+def main():
+    args = parse_args()
+    model = get_clasification_model(args)
+    current_output_path: Path = args.output_dir / datetime.datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+    metrics: list[metric_wrappers.MetricWrapper] = get_metrics_to_compute(args)
+
+    generate_model_metrics(
+        model,
+        AVAILABLE_CLASSIFICATION_DATASETS,
+        current_output_path,
+        clasification_datasets.CLASYFICATION_TARGET,
+        metrics,
+        args.repetitions_number,
+    )
+
+    model = get_regression_model(args)
+
+    generate_model_metrics(
+        model,
+        AVAILABLE_CLASSIFICATION_DATASETS,
+        current_output_path,
+        clasification_datasets.CLASYFICATION_TARGET,
+        metrics,
+        args.repetitions_number,
+    )
