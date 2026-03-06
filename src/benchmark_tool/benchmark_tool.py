@@ -1,6 +1,6 @@
 from src.benchmark_tool.argparser import parse_args
 from src.model_wrappers.full_tabpfn_gen import FullTabpfnGen
-from src.model_wrappers.smote_generator import SmoteGenerator
+from src.model_wrappers.smote_generator import SmoteGenerator, SmoterGenerator
 from src.model_wrappers.ctgan_generator import CTGANGenerator
 from src.test_datasets import clasification_datasets, regression_datasets
 from src.benchmark_tool import metric_wrappers
@@ -56,7 +56,7 @@ def get_clasification_model(args):
 def get_regression_model(args):
     match args.generator_type.lower():
         case "smote":
-            return SmoteGenerator()
+            return SmoterGenerator()
         case "ctgan":
             return CTGANGenerator()
         case "tabpfnunsupervised":
