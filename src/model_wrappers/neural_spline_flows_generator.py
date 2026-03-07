@@ -1,12 +1,13 @@
 import torch
 import pandas as pd
-import numpy as np
 from nflows.transforms.base import CompositeTransform
 from nflows.transforms.permutations import RandomPermutation
 from nflows.transforms.autoregressive import (
     MaskedPiecewiseRationalQuadraticAutoregressiveTransform,
 )
 from nflows import distributions, flows
+import numpy as np
+from sklearn import preprocessing
 
 
 # not ever parameter from the original TabPFNGen code is used here
@@ -30,6 +31,7 @@ class NeuralSplineFlowsGenerator:
         self._batch_norm = batch_norm
         self._flow = None
         self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self._min_max_scaler = preprocessing.MinMaxScaler()
 
     def _build_flow(self, n_features: int):
         transforms_list = []
@@ -62,13 +64,15 @@ class NeuralSplineFlowsGenerator:
         n_iter_min: int = 100,
         batch_size: int = 1000,
     ) -> "NeuralSplineFlowsGenerator":
+        x_scaled = self._min_max_scaler.fit_transform(X)
+
         self._build_flow(n_features=X.shape[1])
         optimizer = torch.optim.Adam(self._flow.parameters(), lr=learning_rate)
 
         best_loss = float("inf")
         patience_counter = 0
 
-        X_tensor = torch.tensor(X, dtype=torch.float32)
+        X_tensor = torch.tensor(x_scaled, dtype=torch.float32)
         train_loader = torch.utils.data.DataLoader(
             X_tensor, batch_size=batch_size, shuffle=True
         )
@@ -121,5 +125,6 @@ class NeuralSplineFlowsGenerator:
             data = data.iloc[indices]
         self.fit(data.to_numpy(), **kwargs)
         samples = self.sample(n_samples)
+        samples = self._min_max_scaler.inverse_transform(samples)
         samples = pd.DataFrame(samples, columns=data.columns)
         return samples.drop(columns=["target"], axis=1), samples["target"]

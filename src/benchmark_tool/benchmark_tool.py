@@ -2,6 +2,7 @@ from src.benchmark_tool.argparser import parse_args
 from src.model_wrappers.full_tabpfn_gen import FullTabpfnGen
 from src.model_wrappers.smote_generator import SmoteGenerator, SmoterGenerator
 from src.model_wrappers.ctgan_generator import CTGANGenerator
+from src.model_wrappers.neural_spline_flows_generator import NeuralSplineFlowsGenerator
 from src.test_datasets import clasification_datasets, regression_datasets
 from src.benchmark_tool import metric_wrappers
 import pandas as pd
@@ -65,6 +66,8 @@ def get_regression_model(args):
             return TabPFGenRegressor(n_sgld_steps=100, clasifier_class=TabICLClassifier)
         case "tabpfngen":
             return TabPFGenRegressor(n_sgld_steps=100)
+        case "nf":
+            return NeuralSplineFlowsGenerator()
         case _:
             raise Exception("Chosen generator type is incorrect")
 
