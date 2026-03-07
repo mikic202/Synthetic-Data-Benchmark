@@ -59,7 +59,7 @@ def get_regression_model(args):
         case "smote":
             return SmoterGenerator()
         case "ctgan":
-            return CTGANGenerator()
+            return CTGANGenerator(preprocess=True)
         case "tabpfnunsupervised":
             return FullTabpfnGen()
         case "tabiclgen":
