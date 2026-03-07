@@ -80,8 +80,9 @@ class SmoterGenerator:
                 random_neighbour.drop("target", axis=1).to_numpy()[0],
             )
             new_example["target"] = (
-                distance_to_real * random_sample["target"]
-                + distance_to_neighbour * random_sample["target"]
+                distance_to_real * random_sample["target"].values[0]
+                + distance_to_neighbour * random_sample["target"].values[0]
             ) / (distance_to_neighbour + distance_to_real)
             new_examples.append(new_example)
-        return pd.DataFrame(new_examples)
+        new_examples = pd.DataFrame(new_examples)
+        return new_examples.drop("target", axis=1), new_examples["target"]
