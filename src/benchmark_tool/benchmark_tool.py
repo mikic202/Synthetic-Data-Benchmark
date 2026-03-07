@@ -1,4 +1,4 @@
-from src.benchmark_tool.argparser import parse_args
+from src.benchmark_tool.argparser import parse_args, save_args
 from src.model_wrappers.full_tabpfn_gen import FullTabpfnGen
 from src.model_wrappers.smote_generator import SmoteGenerator, SmoterGenerator
 from src.model_wrappers.ctgan_generator import CTGANGenerator
@@ -140,7 +140,7 @@ def generate_model_metrics(
             with open(
                 (current_output_path / f"{dataset_name}/{run_number}.json"), "w"
             ) as json_file:
-                json.dump(current_run_results, json_file)
+                json.dump(current_run_results, json_file, indent=4)
 
 
 def main():
@@ -149,8 +149,9 @@ def main():
     current_output_path: Path = args.output_dir / datetime.datetime.now().strftime(
         "%Y-%m-%d %H:%M:%S"
     )
+    current_output_path.mkdir(exist_ok=True, parents=True)
+    save_args(args, current_output_path)
     metrics: list[metric_wrappers.MetricWrapper] = get_metrics_to_compute(args)
-
     generate_model_metrics(
         model,
         AVAILABLE_CLASSIFICATION_DATASETS,

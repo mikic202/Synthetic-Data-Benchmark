@@ -1,5 +1,6 @@
 import argparse
 from pathlib import Path
+import json
 
 
 def parse_args():
@@ -74,3 +75,16 @@ def parse_args():
     )
 
     return parser.parse_args()
+
+
+def namespace_to_dict(namespace):
+    return {
+        k: namespace_to_dict(v) if isinstance(v, argparse.Namespace) else str(v)
+        for k, v in vars(namespace).items()
+    }
+
+
+def save_args(args: argparse.Namespace, save_path: Path):
+    dict_args = namespace_to_dict(args)
+    with open(save_path / "run_params.json", "w") as save_file:
+        json.dump(dict_args, save_file, indent=4)
