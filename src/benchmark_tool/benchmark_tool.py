@@ -50,6 +50,8 @@ def get_clasification_model(args):
             )
         case "tabpfngen":
             return TabPFGenClassifier(n_sgld_steps=100)
+        case "nf":
+            return NeuralSplineFlowsGenerator()
         case _:
             raise Exception("Chosen generator type is incorrect")
 

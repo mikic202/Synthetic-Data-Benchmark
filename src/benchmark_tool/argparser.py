@@ -17,7 +17,14 @@ def parse_args():
     parser.add_argument(
         "generator_type",
         type=str,
-        choices=["tabpfngen", "tabiclgen", "ctgan", "smote", "tabpfnunsupervised"],
+        choices=[
+            "tabpfngen",
+            "tabiclgen",
+            "ctgan",
+            "smote",
+            "tabpfnunsupervised",
+            "nf",
+        ],
         help="Choose which generator type needs to be benchamrked",
     )
 
