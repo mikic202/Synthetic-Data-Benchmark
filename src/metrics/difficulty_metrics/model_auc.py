@@ -11,6 +11,9 @@ from sklearn.preprocessing import StandardScaler
 from multiprocessing import Process, Queue
 import multiprocessing as mp
 from logging import getLogger
+from src.metrics.difficulty_metrics.minimal_tree import (
+    NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION,
+)
 
 
 logger = getLogger(__name__)
@@ -241,13 +244,14 @@ def calculate_auc(
             name="TabPFNClassifier",
         )
     )
-    downstream_jobs.append(
-        Process(
-            target=tabicl_process,
-            args=(downstream_results_queue, synth_x, synth_y, real_x, real_y),
-            name="TabICLClassifier",
+    if real_y.nunique() <= NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION:
+        downstream_jobs.append(
+            Process(
+                target=tabicl_process,
+                args=(downstream_results_queue, synth_x, synth_y, real_x, real_y),
+                name="TabICLClassifier",
+            )
         )
-    )
 
     for job in downstream_jobs:
         job.start()
