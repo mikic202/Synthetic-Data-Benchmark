@@ -4,13 +4,15 @@ from sklearn.decomposition import PCA
 import numpy as np
 from tabicl import TabICLClassifier, InferenceConfig
 import torch
+from sklearn.preprocessing import QuantileTransformer
 
 
 def calculate_convex_hull_coverage(
     real_data: pd.DataFrame, synthetic_data: pd.DataFrame
 ):
-    real_data = encode_data_to_contionous_space(real_data)
-    synthetic_data = encode_data_to_contionous_space(synthetic_data)
+    real_data, synthetic_data = encode_data_to_contionous_space(
+        real_data, synthetic_data
+    )
 
     pca = PCA(n_components=min(7, real_data.shape[1] - 1))
     transformed_points = pca.fit_transform(real_data)
@@ -22,17 +24,38 @@ def calculate_convex_hull_coverage(
     return inside_count / len(synthetic_data) if len(synthetic_data) > 0 else 0.0
 
 
-def encode_data_to_contionous_space(data: pd.DataFrame):
-    model = TabICLClassifier().fit(data, [0] * len(data))
+def encode_data_to_contionous_space(
+    real_data: pd.DataFrame, synthetic_data: pd.DataFrame
+):
+    synthetic_data = synthetic_data[real_data.columns]
+    qt = QuantileTransformer(output_distribution="normal", random_state=42)
+    model = TabICLClassifier().fit(real_data, [0] * len(real_data))
+    real_data = qt.fit_transform(real_data)
+    synthetic_data = qt.transform(synthetic_data)
     inference_config = InferenceConfig()
-    data_tensor = torch.tensor(data.values, dtype=torch.float32).unsqueeze(0)
-    representations = model.model_.row_interactor(
+    real_data_tensor = torch.tensor(real_data, dtype=torch.float32).unsqueeze(0)
+    synthetic_data_tensor = torch.tensor(synthetic_data, dtype=torch.float32).unsqueeze(
+        0
+    )
+    real_representations = model.model_.row_interactor(
         model.model_.col_embedder(
-            data_tensor,
-            train_size=len(data_tensor),
+            real_data_tensor,
+            train_size=len(real_data_tensor),
             feature_shuffles=None,
             mgr_config=inference_config.COL_CONFIG,
         ),
         mgr_config=inference_config.ROW_CONFIG,
     )
-    return representations.squeeze(0).cpu().detach().numpy()
+    synthetic_representation = model.model_.row_interactor(
+        model.model_.col_embedder(
+            synthetic_data_tensor,
+            train_size=len(synthetic_data_tensor),
+            feature_shuffles=None,
+            mgr_config=inference_config.COL_CONFIG,
+        ),
+        mgr_config=inference_config.ROW_CONFIG,
+    )
+    return (
+        real_representations.squeeze(0).cpu().detach().numpy(),
+        synthetic_representation.squeeze(0).cpu().detach().numpy(),
+    )
