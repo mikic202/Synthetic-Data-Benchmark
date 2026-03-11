@@ -14,7 +14,7 @@ def calculate_ralation_between_dree_depth_and_accuaracy(
     real_y: int,
 ):
     accuracy_for_tree_depth = {}
-    if len(np.unique(synthetic_y)) > NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION:
+    if len(np.unique(real_y)) > NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION:
         tree_type = tree.DecisionTreeRegressor
     else:
         tree_type = tree.DecisionTreeClassifier
