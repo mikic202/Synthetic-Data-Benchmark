@@ -167,9 +167,9 @@ def main():
 
     generate_model_metrics(
         model,
-        AVAILABLE_CLASSIFICATION_DATASETS,
+        AVALIABLE_REGRESSION_DATASETS,
         current_output_path,
-        clasification_datasets.CLASYFICATION_TARGET,
+        regression_datasets.REGRESION_TARGET,
         metrics,
         args.repetitions_number,
     )

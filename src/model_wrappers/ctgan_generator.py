@@ -20,7 +20,7 @@ class CTGANGenerator:
         if self._min_max_scaler:
             scaled_data = self._min_max_scaler.fit_transform(data.values)
             data = pd.DataFrame(scaled_data, columns=data.columns)
-        self.model.fit(data.astype(float))
+        self.model.fit(data.astype(float), discrete_columns=[CTGANGenerator.TARGET])
 
     def generate(self, n_samples: int) -> pd.DataFrame:
         return self.model.sample(n_samples)
