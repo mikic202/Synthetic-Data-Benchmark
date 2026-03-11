@@ -17,4 +17,4 @@ def calculate_dataset_statistics(dataset: pd.DataFrame) -> pd.DataFrame:
     dataset_dsc.loc["kstest_statistic"] = train_kstest.statistic
     dataset_dsc.loc["kstest_pvalue"] = train_kstest.pvalue
 
-    return dataset_dsc
+    return dataset_dsc.to_dict()

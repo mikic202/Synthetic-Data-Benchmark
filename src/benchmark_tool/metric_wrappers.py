@@ -25,13 +25,13 @@ class MetricWrapper(ABC):
 class KAnonimity(MetricWrapper):
     @staticmethod
     def __call__(synthetic: pd.DataFrame, *args, **kwargs):
-        return k_anonimity.calculate_k_anonimity_for_datset(synthetic)
+        return int(k_anonimity.calculate_k_anonimity_for_datset(synthetic))
 
 
 class Unlinkability(MetricWrapper):
     @staticmethod
     def __call__(synthetic: pd.DataFrame, real_train: pd.DataFrame, *args, **kwargs):
-        return unlinkability.calculate_unlinkability(synthetic, real_train)
+        return float(unlinkability.calculate_unlinkability(synthetic, real_train))
 
 
 class DistanceToNearestNeighbour(MetricWrapper):
@@ -89,8 +89,10 @@ class ConvexHull(MetricWrapper):
         *args,
         **kwargs,
     ):
-        return convex_hull.calculate_convex_hull_coverage(
-            pd.concat([real_test, real_train]), synthetic
+        return float(
+            convex_hull.calculate_convex_hull_coverage(
+                pd.concat([real_test, real_train]), synthetic
+            )
         )
 
 
