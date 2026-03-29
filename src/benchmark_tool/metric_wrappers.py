@@ -72,8 +72,9 @@ class ModelAuc(MetricWrapper):
         test_x = real_test.drop(target, axis=1)
         test_y = real_test[target]
         if (
-            len(test_y.unique())
-            < minimal_tree.NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION
+            test_y.nunique() <= minimal_tree.NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION
+            and synth_y.nunique()
+            <= minimal_tree.NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION
         ):
             return model_auc.calculate_auc(synth_x, synth_y, test_x, test_y)
         else:

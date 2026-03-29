@@ -237,7 +237,10 @@ def calculate_auc(
             name="XGBClassifier",
         )
     )
-    if real_y.nunique() <= NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION:
+    if (
+        real_y.nunique() <= NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION
+        and synth_y.nunique() <= NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION
+    ):
         downstream_jobs.append(
             Process(
                 target=tabpfn_process,
