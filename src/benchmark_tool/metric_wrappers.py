@@ -6,7 +6,7 @@ from src.metrics.privacy_metrics import (
     distance_to_nearest_neighbour,
 )
 from src.metrics.quality_metrics import dataset_statistics
-from src.metrics.difficulty_metrics import minimal_tree, model_auc
+from src.metrics.difficulty_metrics import minimal_tree, model_auc, model_aoc
 from src.metrics.similarity_metrics import convex_hull, discriminator
 
 
@@ -77,7 +77,7 @@ class ModelAuc(MetricWrapper):
         ):
             return model_auc.calculate_auc(synth_x, synth_y, test_x, test_y)
         else:
-            raise NotImplementedError("AUC for Regression is not implemented")
+            return model_aoc.calculate_rroc_aoc(synth_x, synth_y, test_x, test_y)
 
 
 class ConvexHull(MetricWrapper):
