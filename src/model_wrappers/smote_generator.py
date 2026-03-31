@@ -48,9 +48,10 @@ class SmoterGenerator:
         new_examples = []
         train = X_train.copy()
         train["target"] = y_train
+        train = train.dropna()
         knn = NearestNeighbors(n_neighbors=self.k_nearest + 1)
         knn.fit(train)
-        for _ in range(n_samples):
+        while len(new_examples) < n_samples:
             random_sample = train.sample(n=1)
             neighbours = knn.kneighbors(random_sample, return_distance=False)[0][1:]
             random_neighbour = random.sample(list(neighbours), 1)[0]
@@ -79,6 +80,8 @@ class SmoterGenerator:
                 list(new_example.values()),
                 random_neighbour.drop("target", axis=1).to_numpy()[0],
             )
+            if distance_to_neighbour + distance_to_real == 0:
+                continue
             new_example["target"] = (
                 distance_to_real * random_sample["target"].values[0]
                 + distance_to_neighbour * random_sample["target"].values[0]
