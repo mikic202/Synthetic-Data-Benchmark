@@ -101,7 +101,7 @@ def get_house_prices_regression_dataset(
 
 def get_abalone_dataset(test_size: float = 0.1):
     path = kagglehub.dataset_download("rodolfomendes/abalone-dataset")
-    print(path)
-    dataset = pd.read_csv(path + "/abalone.csv", sep=";")
+    dataset = pd.read_csv(path + "/abalone.csv")
+    dataset["Sex"] = dataset["Sex"].factorize()[0]
     dataset = dataset.rename(columns={"Rings": REGRESION_TARGET}).astype("float32")
     return train_test_split(dataset, test_size=test_size, random_state=42)
