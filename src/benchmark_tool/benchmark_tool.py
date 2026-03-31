@@ -30,9 +30,9 @@ AVAILABLE_CLASSIFICATION_DATASETS = {
 AVALIABLE_REGRESSION_DATASETS = {
     "heart_failure_clinical_regresion": regression_datasets.get_heart_failure_clinical_regresion_dataset,
     "sleep_deprivation_and_cognitive_performance_regression": regression_datasets.get_sleep_deprivation_and_cognitive_performance_regression_dataset,
-    "superconduct_regression": regression_datasets.get_superconduct_regression_dataset,
     "house_prices_regression": regression_datasets.get_house_prices_regression_dataset,
     "abalone": regression_datasets.get_abalone_dataset,
+    "superconduct_regression": regression_datasets.get_superconduct_regression_dataset,
 }
 
 
@@ -148,8 +148,10 @@ def generate_model_metrics(
 def main():
     args = parse_args()
     model = get_clasification_model(args)
-    current_output_path: Path = args.output_dir / datetime.datetime.now().strftime(
-        "%Y-%m-%d %H:%M:%S"
+    current_output_path: Path = (
+        args.output_dir
+        / datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        / "clasification"
     )
     current_output_path.mkdir(exist_ok=True, parents=True)
     save_args(args, current_output_path)
@@ -164,7 +166,12 @@ def main():
     )
 
     model = get_regression_model(args)
-
+    current_output_path: Path = (
+        args.output_dir
+        / datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        / "regression"
+    )
+    current_output_path.mkdir(exist_ok=True, parents=True)
     generate_model_metrics(
         model,
         AVALIABLE_REGRESSION_DATASETS,
