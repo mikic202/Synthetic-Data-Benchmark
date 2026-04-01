@@ -13,9 +13,6 @@ class RawData:
 
     def load_data(self, data_path: Path) -> None:
         self._clasification_results = defaultdict(list)
-        print(
-            list(glob.glob(str(data_path / "clasification/*/*.json"), recursive=True))
-        )
         for file in glob.glob(str(data_path / "clasification/*/*.json")):
             dataset_name = file.split("/")[-2]
             with open(file) as json_file:

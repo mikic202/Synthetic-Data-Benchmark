@@ -3,6 +3,9 @@ from pathlib import Path
 from src.report_generator.postprocessors.k_anonimity_postprocesssor import (
     KAnonimityPostprocessor,
 )
+from src.report_generator.postprocessors.distance_to_nearest_neighbour_postprocessor import (
+    DistanceToNearestNeighbourPostprocessor,
+)
 from src.report_generator.postprocessors.base_postprocessor import RawData
 
 
@@ -32,5 +35,7 @@ def main():
         args.output_dir = args.input_path / "processed"
     args.output_dir.mkdir(exist_ok=True, parents=True)
     k_anonimity_postprocessor = KAnonimityPostprocessor(args.output_dir)
+    distance_postprocessor = DistanceToNearestNeighbourPostprocessor(args.output_dir)
     raw_data = RawData(args.input_path)
     k_anonimity_postprocessor(raw_data)
+    distance_postprocessor(raw_data)
