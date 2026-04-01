@@ -5,6 +5,7 @@ from src.report_generator.postprocessors.base_postprocessor import (
 )
 import statistics
 import json
+import numpy as np
 
 
 class KAnonimityPostprocessor(BasePostprocessor):
@@ -13,13 +14,17 @@ class KAnonimityPostprocessor(BasePostprocessor):
 
     def __call__(self, raw_data: RawData) -> None:
         averages_per_clasification_dataset = {
-            dataset_name: statistics.mean(dataset_results["k-anonimity"])
-            for dataset_name, dataset_results in raw_data.clasification_results
+            dataset_name: statistics.mean(
+                [float(result["k-anonimity"]) for result in dataset_results]
+            )
+            for dataset_name, dataset_results in raw_data.clasification_results.items()
         }
 
         averages_per_regression_dataset = {
-            dataset_name: statistics.mean(dataset_results["k-anonimity"])
-            for dataset_name, dataset_results in raw_data.regression_results
+            dataset_name: statistics.mean(
+                [float(result["k-anonimity"]) for result in dataset_results]
+            )
+            for dataset_name, dataset_results in raw_data.regression_results.items()
         }
 
         with open(
@@ -43,4 +48,5 @@ class KAnonimityPostprocessor(BasePostprocessor):
                     ),
                 },
                 processed_result_files,
+                indent=4,
             )
