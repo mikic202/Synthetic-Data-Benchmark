@@ -34,7 +34,12 @@ def measure_rroc_aoc(
         regressor = model_class(**kwargs).fit(scalled_synth_x, synth_y)
         predicted_y = regressor.predict(scalled_real_x)
         errors = predicted_y - real_y
-        areas_under_curve.append(np.var(errors) / 2.0 * (len(errors) ** 2))
+        areas_under_curve.append(
+            (
+                np.var(errors) / 2.0 * (len(errors) ** 2),
+                regressor.score(scalled_real_x, real_y),
+            )
+        )
     return areas_under_curve
 
 
