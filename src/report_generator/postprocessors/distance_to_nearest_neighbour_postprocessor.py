@@ -15,22 +15,20 @@ class DistanceToNearestNeighbourPostprocessor(BasePostprocessor):
     def __call__(self, raw_data: RawData) -> None:
         averages_per_clasification_dataset = {
             dataset_name: statistics.mean(
-                [
-                    float(result["distance-to-nearest"]["mean"])
-                    for result in dataset_results
-                ]
+                [float(result["mean"]) for result in dataset_results]
             )
-            for dataset_name, dataset_results in raw_data.clasification_results.items()
+            for dataset_name, dataset_results in raw_data.clasification_results[
+                "distance-to-nearest"
+            ].items()
         }
 
         averages_per_regression_dataset = {
             dataset_name: statistics.mean(
-                [
-                    float(result["distance-to-nearest"]["mean"])
-                    for result in dataset_results
-                ]
+                [float(result["mean"]) for result in dataset_results]
             )
-            for dataset_name, dataset_results in raw_data.regression_results.items()
+            for dataset_name, dataset_results in raw_data.regression_results[
+                "distance-to-nearest"
+            ].items()
         }
 
         with open(

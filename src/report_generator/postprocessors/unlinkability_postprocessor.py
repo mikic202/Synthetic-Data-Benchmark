@@ -5,6 +5,7 @@ from src.report_generator.postprocessors.base_postprocessor import (
 )
 import statistics
 import json
+import numpy as np
 
 
 class UnlinkabilityPostprocessor(BasePostprocessor):
@@ -13,17 +14,16 @@ class UnlinkabilityPostprocessor(BasePostprocessor):
 
     def __call__(self, raw_data: RawData) -> None:
         averages_per_clasification_dataset = {
-            dataset_name: statistics.mean(
-                [float(result["unlinkability"]) for result in dataset_results]
-            )
-            for dataset_name, dataset_results in raw_data.clasification_results.items()
+            dataset_name: np.array(dataset_results, dtype=float).mean()
+            for dataset_name, dataset_results in raw_data.clasification_results[
+                "unlinkability"
+            ].items()
         }
-
         averages_per_regression_dataset = {
-            dataset_name: statistics.mean(
-                [float(result["unlinkability"]) for result in dataset_results]
-            )
-            for dataset_name, dataset_results in raw_data.regression_results.items()
+            dataset_name: np.array(dataset_results, dtype=float).mean()
+            for dataset_name, dataset_results in raw_data.regression_results[
+                "unlinkability"
+            ].items()
         }
 
         with open(
