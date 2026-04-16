@@ -9,6 +9,9 @@ from src.report_generator.postprocessors.distance_to_nearest_neighbour_postproce
 from src.report_generator.postprocessors.unlinkability_postprocessor import (
     UnlinkabilityPostprocessor,
 )
+from src.report_generator.postprocessors.tree_depth_postprocessor import (
+    TreeDepthPostprocessor,
+)
 from src.report_generator.postprocessors.base_postprocessor import RawData
 import json
 
@@ -47,6 +50,8 @@ def get_postprocessing_config(data_dir: Path, output_path: Path):
         postprocessors.append(DistanceToNearestNeighbourPostprocessor(output_path))
     if run_params["unlinkability"] == "True":
         postprocessors.append(UnlinkabilityPostprocessor(output_path))
+    if run_params["tree_depth_precision_relation"] == "True":
+        postprocessors.append(TreeDepthPostprocessor(output_path))
 
     return postprocessors
 
