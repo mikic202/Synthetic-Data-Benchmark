@@ -3,7 +3,6 @@ from src.report_generator.postprocessors.base_postprocessor import (
     BasePostprocessor,
     RawData,
 )
-import statistics
 import json
 import numpy as np
 import matplotlib.pyplot as plt

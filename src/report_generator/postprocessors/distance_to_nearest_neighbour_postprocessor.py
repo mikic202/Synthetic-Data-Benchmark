@@ -5,7 +5,6 @@ from src.report_generator.postprocessors.base_postprocessor import (
 )
 import statistics
 import json
-import numpy as np
 
 
 class DistanceToNearestNeighbourPostprocessor(BasePostprocessor):
