@@ -15,6 +15,9 @@ from src.report_generator.postprocessors.tree_depth_postprocessor import (
 from src.report_generator.postprocessors.svn_discrimination_postprocessor import (
     SvnDiscriminationPostprocessor,
 )
+from src.report_generator.postprocessors.convex_hull_postprocessor import (
+    ConvexHullPostprocessor,
+)
 from src.report_generator.postprocessors.base_postprocessor import RawData
 import json
 
@@ -57,6 +60,8 @@ def get_postprocessing_config(data_dir: Path, output_path: Path):
         postprocessors.append(TreeDepthPostprocessor(output_path))
     if run_params["svn_discrimination"] == "True":
         postprocessors.append(SvnDiscriminationPostprocessor(output_path))
+    if run_params["convex_hull"] == "True":
+        postprocessors.append(ConvexHullPostprocessor(output_path))
 
     return postprocessors
 
