@@ -12,6 +12,9 @@ from src.report_generator.postprocessors.unlinkability_postprocessor import (
 from src.report_generator.postprocessors.tree_depth_postprocessor import (
     TreeDepthPostprocessor,
 )
+from src.report_generator.postprocessors.svn_discrimination_postprocessor import (
+    SvnDiscriminationPostprocessor,
+)
 from src.report_generator.postprocessors.base_postprocessor import RawData
 import json
 
@@ -52,6 +55,8 @@ def get_postprocessing_config(data_dir: Path, output_path: Path):
         postprocessors.append(UnlinkabilityPostprocessor(output_path))
     if run_params["tree_depth_precision_relation"] == "True":
         postprocessors.append(TreeDepthPostprocessor(output_path))
+    if run_params["svn_discrimination"] == "True":
+        postprocessors.append(SvnDiscriminationPostprocessor(output_path))
 
     return postprocessors
 
