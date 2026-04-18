@@ -18,6 +18,9 @@ from src.report_generator.postprocessors.svn_discrimination_postprocessor import
 from src.report_generator.postprocessors.convex_hull_postprocessor import (
     ConvexHullPostprocessor,
 )
+from src.report_generator.aggregators.k_anonimity_aggregator import (
+    K_anonimity_aggregator,
+)
 from src.report_generator.postprocessors.base_postprocessor import RawData
 import json
 
@@ -36,6 +39,7 @@ def parse_args():
     parser.add_argument(
         "input_path",
         type=Path,
+        nargs="+",
         help="Directory where the benchmark results are saved",
     )
 
@@ -66,12 +70,39 @@ def get_postprocessing_config(data_dir: Path, output_path: Path):
     return postprocessors
 
 
-def main():
-    args = parse_args()
-    if not args.output_dir:
-        args.output_dir = args.input_path / "processed"
-    args.output_dir.mkdir(exist_ok=True, parents=True)
-    postprocessors = get_postprocessing_config(args.input_path, args.output_dir)
-    raw_data = RawData(args.input_path)
+def postprocess_single_run(input_path: Path, output_dir: Path | None):
+    if not output_dir:
+        output_dir = input_path / "processed"
+    output_dir.mkdir(exist_ok=True, parents=True)
+    postprocessors = get_postprocessing_config(input_path, output_dir)
+    raw_data = RawData(input_path)
     for postprocessor in postprocessors:
         postprocessor(raw_data)
+
+
+def get_tested_generators(input_paths: list[Path]):
+    tested_generators = []
+    for input_dir in input_paths:
+        run_param_file = input_dir / "run_params.json"
+        if not run_param_file.exists():
+            raise Exception("There is no file with a run params")
+        with open(run_param_file, "r") as run_params_filehandle:
+            run_params = json.load(run_params_filehandle)
+        tested_generators.append(run_params["generator_type"])
+    return tested_generators
+
+
+def main():
+    args = parse_args()
+    for input_dir in args.input_path:
+        postprocess_single_run(input_dir, args.output_dir)
+
+    combined_output_path = Path(".") / "combined_results"
+    combined_output_path.mkdir(exist_ok=True)
+
+    combined_path = Path("./combined_results")
+    combined_path.mkdir(exist_ok=True)
+
+    K_anonimity_aggregator(
+        args.input_path, combined_path, get_tested_generators(args.input_path)
+    )()
