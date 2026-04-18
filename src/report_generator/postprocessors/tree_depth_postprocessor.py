@@ -6,6 +6,7 @@ from src.report_generator.postprocessors.base_postprocessor import (
 import json
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.integrate import simpson
 
 
 class TreeDepthPostprocessor(BasePostprocessor):
@@ -35,17 +36,7 @@ class TreeDepthPostprocessor(BasePostprocessor):
                 "tree-depth-precision-relation"
             ].items()
         }
-        with open(
-            self._output_path / "tree_depth_precision_relation.json", "w"
-        ) as output_file:
-            json.dump(
-                {
-                    "clasification": averages_per_clasification_dataset,
-                    "regression": averages_per_regression_dataset,
-                },
-                output_file,
-                indent=4,
-            )
+        area_under_curve = {}
         plot_folder = self._output_path / "tree_depth_precision_relation"
         plot_folder.mkdir(exist_ok=True)
         for dataset in averages_per_clasification_dataset:
@@ -56,6 +47,9 @@ class TreeDepthPostprocessor(BasePostprocessor):
                 averages_per_clasification_dataset[dataset][0],
             )
             plt.savefig(plot_folder / dataset)
+            area_under_curve[dataset] = simpson(
+                averages_per_clasification_dataset[dataset][0], dx=5
+            )
 
         for dataset in averages_per_regression_dataset:
             plt.figure()
@@ -64,3 +58,19 @@ class TreeDepthPostprocessor(BasePostprocessor):
                 averages_per_regression_dataset[dataset][0],
             )
             plt.savefig(plot_folder / dataset)
+            area_under_curve[dataset] = simpson(
+                averages_per_regression_dataset[dataset][0], dx=5
+            )
+
+        with open(
+            self._output_path / "tree_depth_precision_relation.json", "w"
+        ) as output_file:
+            json.dump(
+                {
+                    "clasification": averages_per_clasification_dataset,
+                    "regression": averages_per_regression_dataset,
+                    "area_under_curve": area_under_curve,
+                },
+                output_file,
+                indent=4,
+            )
