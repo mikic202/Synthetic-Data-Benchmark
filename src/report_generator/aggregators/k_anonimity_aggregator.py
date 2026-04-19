@@ -5,7 +5,7 @@ import json
 import pandas as pd
 
 
-class K_anonimity_aggregator:
+class KAnonimityAggregator:
     def __init__(
         self, input_paths: list[Path], output_path: Path, generator_types: list[str]
     ) -> None:
