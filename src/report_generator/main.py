@@ -24,6 +24,7 @@ from src.report_generator.aggregators.k_anonimity_aggregator import (
 from src.report_generator.aggregators.convex_hull_aggregator import ConvexHullAggregator
 from src.report_generator.postprocessors.base_postprocessor import RawData
 import json
+from collections import defaultdict
 
 
 def parse_args():
@@ -82,14 +83,16 @@ def postprocess_single_run(input_path: Path, output_dir: Path | None):
 
 
 def get_tested_generators(input_paths: list[Path]):
-    tested_generators = []
+    tested_generators = defaultdict(list)
     for input_dir in input_paths:
         run_param_file = input_dir / "run_params.json"
         if not run_param_file.exists():
             raise Exception("There is no file with a run params")
         with open(run_param_file, "r") as run_params_filehandle:
             run_params = json.load(run_params_filehandle)
-        tested_generators.append(run_params["generator_type"])
+        for metric in list(run_params.keys())[3:]:
+            if run_params[metric] == "True":
+                tested_generators[metric].append(run_params["generator_type"])
     return tested_generators
 
 
@@ -106,5 +109,10 @@ def main():
 
     tested_generators = get_tested_generators(args.input_path)
 
-    KAnonimityAggregator(args.input_path, combined_path, tested_generators)()
-    ConvexHullAggregator(args.input_path, combined_path, tested_generators)()
+    for metric in tested_generators:
+        if metric == "k_anonimity":
+            KAnonimityAggregator(
+                args.input_path, combined_path, tested_generators[metric]
+            )()
+        elif metric == "convex_hull":
+            ConvexHullAggregator(args.input_path, combined_path, tested_generators)()
