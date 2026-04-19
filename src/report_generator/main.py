@@ -19,8 +19,9 @@ from src.report_generator.postprocessors.convex_hull_postprocessor import (
     ConvexHullPostprocessor,
 )
 from src.report_generator.aggregators.k_anonimity_aggregator import (
-    K_anonimity_aggregator,
+    KAnonimityAggregator,
 )
+from src.report_generator.aggregators.convex_hull_aggregator import ConvexHullAggregator
 from src.report_generator.postprocessors.base_postprocessor import RawData
 import json
 
@@ -103,6 +104,7 @@ def main():
     combined_path = Path("./combined_results")
     combined_path.mkdir(exist_ok=True)
 
-    K_anonimity_aggregator(
-        args.input_path, combined_path, get_tested_generators(args.input_path)
-    )()
+    tested_generators = get_tested_generators(args.input_path)
+
+    KAnonimityAggregator(args.input_path, combined_path, tested_generators)()
+    ConvexHullAggregator(args.input_path, combined_path, tested_generators)()
