@@ -28,6 +28,9 @@ from src.report_generator.aggregators.unlinkability_aggregator import (
 from src.report_generator.aggregators.svn_discrimination_aggregator import (
     SvnDiscriminationAggregator,
 )
+from src.report_generator.aggregators.distance_to_nearest_aggregator import (
+    DistanceToNearestNeigbourAggregator,
+)
 from src.report_generator.postprocessors.base_postprocessor import RawData
 import json
 from collections import defaultdict
@@ -127,5 +130,9 @@ def main():
             UnlinkabilityAggregator(args.input_path, combined_path, tested_generators)()
         elif metric == "svn_discrimination":
             SvnDiscriminationAggregator(
+                args.input_path, combined_path, tested_generators
+            )()
+        elif metric == "distance_to_nearest":
+            DistanceToNearestNeigbourAggregator(
                 args.input_path, combined_path, tested_generators
             )()
