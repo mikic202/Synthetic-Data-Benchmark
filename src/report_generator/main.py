@@ -31,6 +31,9 @@ from src.report_generator.aggregators.svn_discrimination_aggregator import (
 from src.report_generator.aggregators.distance_to_nearest_aggregator import (
     DistanceToNearestNeigbourAggregator,
 )
+from src.report_generator.aggregators.tree_depth_relation_aggregator import (
+    TreeDepthRelationAggregator,
+)
 from src.report_generator.postprocessors.base_postprocessor import RawData
 import json
 from collections import defaultdict
@@ -124,15 +127,23 @@ def main():
                 args.input_path, combined_path, tested_generators[metric]
             )()
         elif metric == "convex_hull":
-            ConvexHullAggregator(args.input_path, combined_path, tested_generators)()
+            ConvexHullAggregator(
+                args.input_path, combined_path, tested_generators[metric]
+            )()
 
         elif metric == "unlinkability":
-            UnlinkabilityAggregator(args.input_path, combined_path, tested_generators)()
+            UnlinkabilityAggregator(
+                args.input_path, combined_path, tested_generators[metric]
+            )()
         elif metric == "svn_discrimination":
             SvnDiscriminationAggregator(
-                args.input_path, combined_path, tested_generators
+                args.input_path, combined_path, tested_generators[metric]
             )()
         elif metric == "distance_to_nearest":
             DistanceToNearestNeigbourAggregator(
-                args.input_path, combined_path, tested_generators
+                args.input_path, combined_path, tested_generators[metric]
+            )()
+        elif metric == "tree_depth_precision_relation":
+            TreeDepthRelationAggregator(
+                args.input_path, combined_path, tested_generators[metric]
             )()
