@@ -26,28 +26,39 @@ class TreeDepthRelationAggregator:
         self._output_path = output_path
 
     def __call__(self) -> Any:
-        results = {}
+        clasification_results = defaultdict(dict)
+        regression_results = defaultdict(dict)
         for generator_type, k_aninimity_path in zip(
             self._generator_types, self._file_paths
         ):
             with open(k_aninimity_path) as k_aninimity_file:
                 data = json.load(k_aninimity_file)
-            results[generator_type] = {
-                **data["clasification"],
-                # **data["reg_dataset_avg"],
-            }
-        results_grupped_by_dataset = defaultdict(dict)
-        for generator_type in results:
-            for dataset in results[generator_type]:
-                results_grupped_by_dataset[dataset][generator_type] = results[
-                    generator_type
-                ][dataset][0]
+            for dataset, values in data["clasification"].items():
+                clasification_results[dataset][generator_type] = values[0]
+            for dataset, values in data["regression"].items():
+                regression_results[dataset][generator_type] = values[0]
 
-        for dataset in results_grupped_by_dataset:
-            data = pd.DataFrame(results_grupped_by_dataset[dataset])
+        for dataset in clasification_results:
+            data = pd.DataFrame(clasification_results[dataset])
+            data.index = data.index + 1
             plt.figure()
             plt.plot(data)
             plt.legend(data.columns)
+            plt.title(f"Tree depth accuracy realtion for \n the {dataset} dataset")
+            plt.xlabel("Tree Depth")
+            plt.ylabel("Accuracy")
+            plt.savefig(self._output_path / dataset)
+            plt.close()
+
+        for dataset in regression_results:
+            data = pd.DataFrame(regression_results[dataset])
+            data.index = data.index + 1
+            plt.figure()
+            plt.plot(data)
+            plt.legend(data.columns)
+            plt.title(f"Tree depth $R^2$ realtion for \n the {dataset} dataset")
+            plt.xlabel("Tree Depth")
+            plt.ylabel("$R^2$")
             plt.savefig(self._output_path / dataset)
             plt.close()
 
