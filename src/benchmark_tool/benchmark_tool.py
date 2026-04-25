@@ -3,6 +3,7 @@ from src.model_wrappers.full_tabpfn_gen import FullTabpfnGen
 from src.model_wrappers.smote_generator import SmoteGenerator, SmoterGenerator
 from src.model_wrappers.ctgan_generator import CTGANGenerator
 from src.model_wrappers.neural_spline_flows_generator import NeuralSplineFlowsGenerator
+from src.model_wrappers.real_data_generator import RealDataGenerator
 from src.test_datasets import clasification_datasets, regression_datasets
 from src.benchmark_tool import metric_wrappers
 import pandas as pd
@@ -52,6 +53,8 @@ def get_clasification_model(args):
             return TabPFGenClassifier(n_sgld_steps=100)
         case "nf":
             return NeuralSplineFlowsGenerator()
+        case "real":
+            return RealDataGenerator()
         case _:
             raise Exception("Chosen generator type is incorrect")
 
@@ -70,6 +73,8 @@ def get_regression_model(args):
             return TabPFGenRegressor(n_sgld_steps=100)
         case "nf":
             return NeuralSplineFlowsGenerator()
+        case "real":
+            return RealDataGenerator()
         case _:
             raise Exception("Chosen generator type is incorrect")
 
@@ -148,13 +153,13 @@ def generate_model_metrics(
 def main():
     args = parse_args()
     model = get_clasification_model(args)
-    current_output_path: Path = (
-        args.output_dir
-        / datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        / "clasification"
+    main_output_path: Path = args.output_dir / datetime.datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S"
     )
+    main_output_path.mkdir(exist_ok=True, parents=True)
+    save_args(args, main_output_path)
+    current_output_path: Path = main_output_path / "clasification"
     current_output_path.mkdir(exist_ok=True, parents=True)
-    save_args(args, current_output_path)
     metrics: list[metric_wrappers.MetricWrapper] = get_metrics_to_compute(args)
     generate_model_metrics(
         model,
@@ -166,11 +171,7 @@ def main():
     )
 
     model = get_regression_model(args)
-    current_output_path: Path = (
-        args.output_dir
-        / datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        / "regression"
-    )
+    current_output_path: Path = main_output_path / "regression"
     current_output_path.mkdir(exist_ok=True, parents=True)
     generate_model_metrics(
         model,
