@@ -5,6 +5,7 @@ import json
 import pandas as pd
 from collections import defaultdict
 import matplotlib.pyplot as plt
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 class TreeDepthRelationAggregator:
@@ -23,7 +24,17 @@ class TreeDepthRelationAggregator:
             )
         ]
         self._generator_types = generator_types
-        self._output_path = output_path
+        self._output_path = output_path / "tree_depth_relation"
+        self._output_path.mkdir(exist_ok=True)
+
+    def _save_cosine_similarity(
+        self, graph_course: pd.DataFrame, output_location: Path
+    ):
+        cosine_dist_matrix = cosine_similarity(graph_course.T)
+        cosine_sim_df = pd.DataFrame(
+            cosine_dist_matrix, index=graph_course.columns, columns=graph_course.columns
+        )
+        cosine_sim_df.to_latex(output_location)
 
     def __call__(self) -> Any:
         clasification_results = defaultdict(dict)
@@ -49,6 +60,7 @@ class TreeDepthRelationAggregator:
             plt.ylabel("Accuracy")
             plt.savefig(self._output_path / dataset)
             plt.close()
+            self._save_cosine_similarity(data, self._output_path / (dataset + ".tex"))
 
         for dataset in regression_results:
             data = pd.DataFrame(regression_results[dataset])
@@ -61,5 +73,5 @@ class TreeDepthRelationAggregator:
             plt.ylabel("$R^2$")
             plt.savefig(self._output_path / dataset)
             plt.close()
-
+            self._save_cosine_similarity(data, self._output_path / (dataset + ".tex"))
         # dataframe.to_latex(self._output_path / f"{self._filename}.tex")
