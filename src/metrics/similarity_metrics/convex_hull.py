@@ -27,35 +27,25 @@ def calculate_convex_hull_coverage(
 def encode_data_to_contionous_space(
     real_data: pd.DataFrame, synthetic_data: pd.DataFrame
 ):
+    real_data_size = len(real_data)
     synthetic_data = synthetic_data[real_data.columns]
     qt = QuantileTransformer(output_distribution="normal", random_state=42)
-    model = TabICLClassifier().fit(real_data, [0] * len(real_data))
-    real_data = qt.fit_transform(real_data)
-    synthetic_data = qt.transform(synthetic_data)
+    data = pd.concat([real_data, synthetic_data], axis=0)
+    model = TabICLClassifier().fit(data, [0] * len(data))
+    data = qt.fit_transform(data)
     inference_config = InferenceConfig()
-    real_data_tensor = torch.tensor(real_data, dtype=torch.float32).unsqueeze(0)
-    synthetic_data_tensor = torch.tensor(synthetic_data, dtype=torch.float32).unsqueeze(
-        0
-    )
-    real_representations = model.model_.row_interactor(
+    data_tensor = torch.tensor(data, dtype=torch.float32).unsqueeze(0)
+    data_representations = model.model_.row_interactor(
         model.model_.col_embedder(
-            real_data_tensor,
-            train_size=len(real_data_tensor),
+            data_tensor,
+            train_size=len(data_tensor),
             feature_shuffles=None,
             mgr_config=inference_config.COL_CONFIG,
         ),
         mgr_config=inference_config.ROW_CONFIG,
     )
-    synthetic_representation = model.model_.row_interactor(
-        model.model_.col_embedder(
-            synthetic_data_tensor,
-            train_size=len(synthetic_data_tensor),
-            feature_shuffles=None,
-            mgr_config=inference_config.COL_CONFIG,
-        ),
-        mgr_config=inference_config.ROW_CONFIG,
-    )
+    data_numpy = data_representations.squeeze(0).cpu().detach().numpy()
     return (
-        real_representations.squeeze(0).cpu().detach().numpy(),
-        synthetic_representation.squeeze(0).cpu().detach().numpy(),
+        data_numpy[:real_data_size],
+        data_numpy[real_data_size:],
     )
