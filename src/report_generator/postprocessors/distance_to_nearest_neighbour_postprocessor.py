@@ -5,6 +5,7 @@ from src.report_generator.postprocessors.base_postprocessor import (
 )
 import statistics
 import json
+from src.constants import DISTANCE_TO_NEAREST_NEIGHBOUR
 
 
 class DistanceToNearestNeighbourPostprocessor(BasePostprocessor):
@@ -17,7 +18,7 @@ class DistanceToNearestNeighbourPostprocessor(BasePostprocessor):
                 [float(result["mean"]) for result in dataset_results]
             )
             for dataset_name, dataset_results in raw_data.clasification_results[
-                "distance-to-nearest"
+                DISTANCE_TO_NEAREST_NEIGHBOUR
             ].items()
         }
 
@@ -26,7 +27,7 @@ class DistanceToNearestNeighbourPostprocessor(BasePostprocessor):
                 [float(result["mean"]) for result in dataset_results]
             )
             for dataset_name, dataset_results in raw_data.regression_results[
-                "distance-to-nearest"
+                DISTANCE_TO_NEAREST_NEIGHBOUR
             ].items()
         }
 

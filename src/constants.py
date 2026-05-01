@@ -1,0 +1,6 @@
+K_ANONIMITY = "k-anonimity"
+CONVEX_HULL = "convex-hull"
+DISTANCE_TO_NEAREST_NEIGHBOUR = "distance-to-nearest"
+DISCRIMINATION = "svn-discrimination"
+TREE_DEPTH_RELATION = "tree-depth-precision-relation"
+UNLINKABILITY = "unlinkability"

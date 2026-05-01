@@ -7,6 +7,7 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import simpson
+from src.constants import TREE_DEPTH_RELATION
 
 
 class TreeDepthPostprocessor(BasePostprocessor):
@@ -22,7 +23,7 @@ class TreeDepthPostprocessor(BasePostprocessor):
                 list(dataset_results[0].keys()),
             )
             for dataset_name, dataset_results in raw_data.clasification_results[
-                "tree-depth-precision-relation"
+                TREE_DEPTH_RELATION
             ].items()
         }
         averages_per_regression_dataset = {
@@ -33,7 +34,7 @@ class TreeDepthPostprocessor(BasePostprocessor):
                 list(dataset_results[0].keys()),
             )
             for dataset_name, dataset_results in raw_data.regression_results[
-                "tree-depth-precision-relation"
+                TREE_DEPTH_RELATION
             ].items()
         }
         area_under_curve = {}
