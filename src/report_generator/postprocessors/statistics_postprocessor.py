@@ -25,6 +25,7 @@ class StatisticsPostprocessor(BasePostprocessor):
             )
             .apply(lambda x: x.mean(), axis=1)
             .unstack()
+            .to_dict()
             for dataset_name, dataset_results in raw_data.clasification_results[
                 self._postprocessing_index
             ].items()
@@ -39,6 +40,7 @@ class StatisticsPostprocessor(BasePostprocessor):
             )
             .apply(lambda x: x.mean(), axis=1)
             .unstack()
+            .to_dict()
             for dataset_name, dataset_results in raw_data.regression_results[
                 self._postprocessing_index
             ].items()
