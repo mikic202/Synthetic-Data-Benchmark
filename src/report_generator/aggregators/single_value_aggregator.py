@@ -1,5 +1,6 @@
 from pathlib import Path
 import glob
+from typing import Any
 import json
 import pandas as pd
 
@@ -8,7 +9,6 @@ class SingleValueAggregator:
     def __init__(
         self,
         input_paths: list[Path],
-        reference_data_path: Path,
         output_path: Path,
         generator_types: list[str],
         filename: str,
@@ -20,28 +20,20 @@ class SingleValueAggregator:
                 str(path / f"**/{filename}.json"), recursive=True
             )
         ]
-        self._reference_path = list(
-            glob.glob(str(reference_data_path / f"**/{filename}.json"), recursive=True)
-        )[0]
         self._generator_types = generator_types
         self._output_path = output_path
         self._filename = filename
 
-    def __call__(self) -> None:
+    def __call__(self) -> Any:
         results = {}
-        for generator_type, data_path in zip(
-            [*self._generator_types, "reference"],
-            [*self._file_paths, self._reference_path],
+        for generator_type, k_aninimity_path in zip(
+            self._generator_types, self._file_paths
         ):
-            with open(data_path) as data_file:
-                data = json.load(data_file)
+            with open(k_aninimity_path) as k_aninimity_file:
+                data = json.load(k_aninimity_file)
             results[generator_type] = {
                 **data["cl_dataset_avg"],
                 **data["reg_dataset_avg"],
             }
         dataframe = pd.DataFrame(results)
-        dataframe.loc["average"] = dataframe.mean()
-        dataframe.to_latex(
-            self._output_path / f"{self._filename}.tex",
-            column_format="l" + "c" * (dataframe.shape[1] - 1) + "|" + "c",
-        )
+        dataframe.to_latex(self._output_path / f"{self._filename}.tex")

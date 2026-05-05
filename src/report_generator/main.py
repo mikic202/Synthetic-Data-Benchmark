@@ -46,12 +46,6 @@ def parse_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "reference_data_path",
-        type=Path,
-        help="Directory where the reference (real data) benchmark results are saved",
-    )
-
-    parser.add_argument(
         "-o",
         "--output-dir",
         type=Path,
@@ -120,7 +114,7 @@ def get_tested_generators(input_paths: list[Path]):
 
 def main():
     args = parse_args()
-    for input_dir in [*args.input_path, args.reference_data_path]:
+    for input_dir in args.input_path:
         postprocess_single_run(input_dir, args.output_dir)
 
     combined_output_path = Path(".") / "combined_results"
@@ -134,39 +128,24 @@ def main():
     for metric in tested_generators:
         if metric == "k_anonimity":
             KAnonimityAggregator(
-                args.input_path,
-                args.reference_data_path,
-                combined_path,
-                tested_generators[metric],
+                args.input_path, combined_path, tested_generators[metric]
             )()
         elif metric == "convex_hull":
             ConvexHullAggregator(
-                args.input_path,
-                args.reference_data_path,
-                combined_path,
-                tested_generators[metric],
+                args.input_path, combined_path, tested_generators[metric]
             )()
 
         elif metric == "unlinkability":
             UnlinkabilityAggregator(
-                args.input_path,
-                args.reference_data_path,
-                combined_path,
-                tested_generators[metric],
+                args.input_path, combined_path, tested_generators[metric]
             )()
         elif metric == "svn_discrimination":
             SvnDiscriminationAggregator(
-                args.input_path,
-                args.reference_data_path,
-                combined_path,
-                tested_generators[metric],
+                args.input_path, combined_path, tested_generators[metric]
             )()
         elif metric == "distance_to_nearest":
             DistanceToNearestNeigbourAggregator(
-                args.input_path,
-                args.reference_data_path,
-                combined_path,
-                tested_generators[metric],
+                args.input_path, combined_path, tested_generators[metric]
             )()
         elif metric == "tree_depth_precision_relation":
             TreeDepthRelationAggregator(
