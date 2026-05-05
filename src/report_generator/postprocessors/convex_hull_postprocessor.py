@@ -2,7 +2,7 @@ from pathlib import Path
 from src.report_generator.postprocessors.single_value_postprocessor import (
     SingleValuePostprocessor,
 )
-from src.constants import K_ANONIMITY, CONVEX_HULL
+from src.constants import CONVEX_HULL
 
 
 class ConvexHullPostprocessor(SingleValuePostprocessor):

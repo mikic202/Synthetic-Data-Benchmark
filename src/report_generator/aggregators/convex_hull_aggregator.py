@@ -2,7 +2,7 @@ from pathlib import Path
 from src.report_generator.aggregators.single_value_aggregator import (
     SingleValueAggregator,
 )
-from src.constants import K_ANONIMITY, CONVEX_HULL
+from src.constants import CONVEX_HULL
 
 
 class ConvexHullAggregator(SingleValueAggregator):

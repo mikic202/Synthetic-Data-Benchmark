@@ -1,9 +1,5 @@
 import pandas as pd
-from imblearn.over_sampling import SMOTE
 import numpy as np
-import random
-from sklearn.neighbors import NearestNeighbors
-from scipy.spatial import distance
 from random import choices
 
 
