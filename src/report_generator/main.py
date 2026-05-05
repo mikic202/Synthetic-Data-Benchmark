@@ -60,6 +60,13 @@ def parse_args():
         help="Directory where the benchmark results are saved",
     )
 
+    parser.add_argument(
+        "-r",
+        "--reference-data-path",
+        type=Path,
+        default=None,
+        help="Directory where the postprocessed reference benchmark results should be saved",
+    )
     return parser.parse_args()
 
 
@@ -109,12 +116,18 @@ def get_tested_generators(input_paths: list[Path]):
         for metric in list(run_params.keys())[3:]:
             if run_params[metric] == "True":
                 tested_generators[metric].append(run_params["generator_type"])
+            else:
+                tested_generators[metric].append(None)
     return tested_generators
 
 
 def main():
     args = parse_args()
-    for input_dir in args.input_path:
+    for input_dir in (
+        [*args.input_path, args.reference_data_path]
+        if args.reference_data_path
+        else args.input_path
+    ):
         postprocess_single_run(input_dir, args.output_dir)
 
     combined_output_path = Path(".") / "combined_results"
@@ -123,31 +136,73 @@ def main():
     combined_path = Path("./combined_results")
     combined_path.mkdir(exist_ok=True)
 
-    tested_generators = get_tested_generators(args.input_path)
+    tested_generators = get_tested_generators(
+        (
+            [*args.input_path, args.reference_data_path]
+            if args.reference_data_path
+            else args.input_path
+        ),
+    )
 
     for metric in tested_generators:
         if metric == "k_anonimity":
             KAnonimityAggregator(
-                args.input_path, combined_path, tested_generators[metric]
+                (
+                    [*args.input_path, args.reference_data_path]
+                    if args.reference_data_path
+                    else args.input_path
+                ),
+                combined_path,
+                tested_generators[metric],
             )()
         elif metric == "convex_hull":
             ConvexHullAggregator(
-                args.input_path, combined_path, tested_generators[metric]
+                (
+                    [*args.input_path, args.reference_data_path]
+                    if args.reference_data_path
+                    else args.input_path
+                ),
+                combined_path,
+                tested_generators[metric],
             )()
 
         elif metric == "unlinkability":
             UnlinkabilityAggregator(
-                args.input_path, combined_path, tested_generators[metric]
+                (
+                    [*args.input_path, args.reference_data_path]
+                    if args.reference_data_path
+                    else args.input_path
+                ),
+                combined_path,
+                tested_generators[metric],
             )()
         elif metric == "svn_discrimination":
             SvnDiscriminationAggregator(
-                args.input_path, combined_path, tested_generators[metric]
+                (
+                    [*args.input_path, args.reference_data_path]
+                    if args.reference_data_path
+                    else args.input_path
+                ),
+                combined_path,
+                tested_generators[metric],
             )()
         elif metric == "distance_to_nearest":
             DistanceToNearestNeigbourAggregator(
-                args.input_path, combined_path, tested_generators[metric]
+                (
+                    [*args.input_path, args.reference_data_path]
+                    if args.reference_data_path
+                    else args.input_path
+                ),
+                combined_path,
+                tested_generators[metric],
             )()
         elif metric == "tree_depth_precision_relation":
             TreeDepthRelationAggregator(
-                args.input_path, combined_path, tested_generators[metric]
+                (
+                    [*args.input_path, args.reference_data_path]
+                    if args.reference_data_path
+                    else args.input_path
+                ),
+                combined_path,
+                tested_generators[metric],
             )()

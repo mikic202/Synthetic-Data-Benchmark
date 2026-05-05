@@ -15,10 +15,11 @@ class SingleValueAggregator:
     ) -> None:
         self._file_paths = [
             found_file
-            for path in input_paths
+            for path, is_metric_generated in zip(input_paths, generator_types)
             for found_file in glob.glob(
                 str(path / f"**/{filename}.json"), recursive=True
             )
+            if is_metric_generated
         ]
         self._generator_types = generator_types
         self._output_path = output_path
