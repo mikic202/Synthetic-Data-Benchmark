@@ -7,6 +7,16 @@ from src.constants import UNLINKABILITY
 
 class UnlinkabilityAggregator(SingleValueAggregator):
     def __init__(
-        self, input_paths: list[Path], output_path: Path, generator_types: list[str]
+        self,
+        input_paths: list[Path],
+        reference_data_path: Path,
+        output_path: Path,
+        generator_types: list[str],
     ) -> None:
-        super().__init__(input_paths, output_path, generator_types, UNLINKABILITY)
+        super().__init__(
+            input_paths,
+            reference_data_path,
+            output_path,
+            generator_types,
+            UNLINKABILITY,
+        )
