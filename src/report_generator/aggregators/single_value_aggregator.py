@@ -27,6 +27,7 @@ class SingleValueAggregator:
 
     def __call__(self) -> Any:
         results = {}
+        result_stds = {}
         for generator_type, k_aninimity_path in zip(
             self._generator_types, self._file_paths
         ):
@@ -36,5 +37,14 @@ class SingleValueAggregator:
                 **data["cl_dataset_avg"],
                 **data["reg_dataset_avg"],
             }
+            result_stds[generator_type] = {
+                **data["cl_dataset_std"],
+                **data["reg_dataset_std"],
+            }
         dataframe = pd.DataFrame(results)
-        dataframe.to_latex(self._output_path / f"{self._filename}.tex")
+        std_dataframe = pd.DataFrame(result_stds)
+        (
+            dataframe.map("${:.2f}".format)
+            + " \pm "
+            + std_dataframe.map("{:.2f}$".format)
+        ).to_latex(self._output_path / f"{self._filename}.tex")
