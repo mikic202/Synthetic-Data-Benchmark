@@ -37,6 +37,9 @@ from src.report_generator.aggregators.distance_to_nearest_aggregator import (
 from src.report_generator.aggregators.tree_depth_relation_aggregator import (
     TreeDepthRelationAggregator,
 )
+from src.report_generator.aggregators.statistics_aggregator import (
+    DataseStatisticsAggregator,
+)
 from src.report_generator.postprocessors.base_postprocessor import RawData
 import json
 from collections import defaultdict
@@ -203,6 +206,13 @@ def main():
                     if args.reference_data_path
                     else args.input_path
                 ),
+                combined_path,
+                tested_generators[metric],
+            )()
+        elif metric == "dataset_statistics":
+            DataseStatisticsAggregator(
+                args.input_path,
+                args.reference_data_path,
                 combined_path,
                 tested_generators[metric],
             )()
