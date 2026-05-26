@@ -38,11 +38,14 @@ def measure_auc(
         clasifier = model_class(**kwargs).fit(scalled_synth_x, synth_y)
         if len(np.unique(real_y)) > NUMBER_OF_UNIQUE_ELEMENTS_FOR_BINARY_CLASIFICATION:
             areas_under_curve.append(
-                roc_auc_score(
-                    real_y,
-                    clasifier.predict_proba(scalled_real_x),
-                    multi_class="ovr",
-                )
+                (
+                    roc_auc_score(
+                        real_y,
+                        clasifier.predict_proba(scalled_real_x),
+                        multi_class="ovr",
+                    ),
+                    clasifier.score(scalled_real_x, real_y),
+                ),
             )
             continue
         areas_under_curve.append(
