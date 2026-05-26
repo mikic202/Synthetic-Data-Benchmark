@@ -16,7 +16,14 @@ from external.tab_pfn_gen.src.tabpfgen.tabpfgen import (
     TabICLClassifier,
 )
 from typing import Callable
-
+from src.constants import (
+    K_ANONIMITY,
+    CONVEX_HULL,
+    DISTANCE_TO_NEAREST_NEIGHBOUR,
+    DISCRIMINATION,
+    TREE_DEPTH_RELATION,
+    UNLINKABILITY,
+)
 
 AVAILABLE_CLASSIFICATION_DATASETS = {
     "mfeat_zernike": clasification_datasets.get_mfeat_zernike_dataset,
@@ -24,7 +31,7 @@ AVAILABLE_CLASSIFICATION_DATASETS = {
     "climate_model_simulation": clasification_datasets.get_climate_model_simulation_dataset,
     "wdbc": clasification_datasets.get_wdbc_dataset,
     "analcatdata_authorship": clasification_datasets.get_analcatdata_authorship_dataset,
-    "cardiovascular": clasification_datasets.get_cardiovascular_dataset,
+    # "cardiovascular": clasification_datasets.get_cardiovascular_dataset,
 }
 
 
@@ -33,7 +40,7 @@ AVALIABLE_REGRESSION_DATASETS = {
     "sleep_deprivation_and_cognitive_performance_regression": regression_datasets.get_sleep_deprivation_and_cognitive_performance_regression_dataset,
     "house_prices_regression": regression_datasets.get_house_prices_regression_dataset,
     "abalone": regression_datasets.get_abalone_dataset,
-    "superconduct_regression": regression_datasets.get_superconduct_regression_dataset,
+    # "superconduct_regression": regression_datasets.get_superconduct_regression_dataset,
 }
 
 
@@ -82,21 +89,23 @@ def get_regression_model(args):
 def get_metrics_to_compute(args):
     metrics = {}
     if args.k_anonimity:
-        metrics["k-anonimity"] = metric_wrappers.KAnonimity()
+        metrics[K_ANONIMITY] = metric_wrappers.KAnonimity()
     if args.unlinkability:
-        metrics["unlinkability"] = metric_wrappers.Unlinkability()
+        metrics[UNLINKABILITY] = metric_wrappers.Unlinkability()
     if args.distance_to_nearest:
-        metrics["distance-to-nearest"] = metric_wrappers.DistanceToNearestNeighbour()
+        metrics[DISTANCE_TO_NEAREST_NEIGHBOUR] = (
+            metric_wrappers.DistanceToNearestNeighbour()
+        )
     if args.dataset_statistics:
         metrics["dataset-statistics"] = metric_wrappers.DatasetStatistics()
     if args.tree_depth_precision_relation:
-        metrics["tree-depth-precision-relation"] = metric_wrappers.MinimalTree()
+        metrics[TREE_DEPTH_RELATION] = metric_wrappers.MinimalTree()
     if args.area_under_curve:
         metrics["area-under-curve"] = metric_wrappers.ModelAuc()
     if args.convex_hull:
-        metrics["convex-hull"] = metric_wrappers.ConvexHull()
+        metrics[CONVEX_HULL] = metric_wrappers.ConvexHull()
     if args.svn_discrimination:
-        metrics["svn-discrimination"] = metric_wrappers.Discrimination()
+        metrics[DISCRIMINATION] = metric_wrappers.Discrimination()
     return metrics
 
 
@@ -108,7 +117,7 @@ def generate_samples(
 ):
     real_x, real_y = (
         real_dataset.drop(target, axis=1),
-        real_dataset[target].to_list(),
+        real_dataset[target].to_numpy(),
     )
 
     synth_x, synth_y = model(
@@ -137,6 +146,7 @@ def generate_model_metrics(
             current_run_results = {}
             train, test = dataset_getter()
             synth = generate_samples(train, target, model)
+            synth.to_csv(current_output_path / "data.csv")
             for metric_name in metrics:
                 current_run_results[metric_name] = metrics[metric_name](
                     synthetic=synth,
