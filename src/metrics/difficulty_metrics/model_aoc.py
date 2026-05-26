@@ -10,7 +10,6 @@ from multiprocessing import Process, Queue
 import multiprocessing as mp
 from logging import getLogger
 
-
 logger = getLogger(__name__)
 
 
@@ -119,7 +118,7 @@ def random_forest_process(
     test_y: pd.DataFrame,
 ):
     downstream_results_queue.put(
-        (0, measure_random_forest_rroc_aoc([synth_x], [synth_y], test_x, test_y)[0])
+        ("RF", measure_random_forest_rroc_aoc([synth_x], [synth_y], test_x, test_y)[0])
     )
 
 
@@ -131,7 +130,7 @@ def xgb_process(
     test_y: pd.DataFrame,
 ):
     downstream_results_queue.put(
-        (1, measure_xgb_rroc_aoc([synth_x], [synth_y], test_x, test_y)[0])
+        ("XGB", measure_xgb_rroc_aoc([synth_x], [synth_y], test_x, test_y)[0])
     )
 
 
@@ -143,7 +142,7 @@ def tabpfn_process(
     test_y: pd.DataFrame,
 ):
     downstream_results_queue.put(
-        (3, measure_tabpfn_rroc_aoc([synth_x], [synth_y], test_x, test_y)[0])
+        ("TapPFN", measure_tabpfn_rroc_aoc([synth_x], [synth_y], test_x, test_y)[0])
     )
 
 
@@ -155,7 +154,10 @@ def logistic_regression_process(
     test_y: pd.DataFrame,
 ):
     downstream_results_queue.put(
-        (2, measure_linear_regresion_rroc_aoc([synth_x], [synth_y], test_x, test_y)[0])
+        (
+            "LR",
+            measure_linear_regresion_rroc_aoc([synth_x], [synth_y], test_x, test_y)[0],
+        )
     )
 
 
@@ -203,9 +205,6 @@ def calculate_rroc_aoc(
     for job in downstream_jobs:
         logger.debug(f"Waiting for {job.name} to finish...")
         job.join()
-    return [
-        accuracy
-        for _, accuracy in sorted(
-            downstream_results_queue.get() for _ in range(len(downstream_jobs))
-        )
-    ]
+    return {
+        model_anme: accuracy for model_anme, accuracy in downstream_results_queue.get()
+    }
