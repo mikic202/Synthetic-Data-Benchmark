@@ -261,5 +261,8 @@ def calculate_auc(
         logger.debug(f"Waiting for {job.name} to finish...")
         job.join()
     return {
-        model_anme: accuracy for model_anme, accuracy in downstream_results_queue.get()
+        model_name: accuracy
+        for model_name, accuracy in sorted(
+            downstream_results_queue.get() for _ in range(len(downstream_jobs))
+        )
     }

@@ -146,7 +146,7 @@ def generate_model_metrics(
             current_run_results = {}
             train, test = dataset_getter()
             synth = generate_samples(train, target, model)
-            synth.to_csv(current_output_path / "data.csv")
+            synth.to_csv(current_output_path / f"{dataset_name}/{run_number}.csv")
             for metric_name in metrics:
                 current_run_results[metric_name] = metrics[metric_name](
                     synthetic=synth,
