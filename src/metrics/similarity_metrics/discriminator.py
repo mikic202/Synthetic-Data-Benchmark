@@ -3,7 +3,7 @@ from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 
 
-def measure_how_well_svn_distinguishes_real_data(
+def calculate_xgb_descrimination(
     real: pd.DataFrame, synthetic: pd.DataFrame, test_size: int = 0.2
 ) -> float:
     discriminator = XGBClassifier()

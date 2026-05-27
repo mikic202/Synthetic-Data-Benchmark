@@ -3,7 +3,7 @@ from sklearn.neighbors import NearestNeighbors
 import numpy as np
 
 
-def calculate_distance_toNearest_record(
+def calculate_distance_to_nearest_record(
     synthetic_dataset: pd.DataFrame,
     real_dataset: pd.DataFrame,
     identifier_atributes: list[str] | None = None,
