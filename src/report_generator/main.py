@@ -40,6 +40,8 @@ from src.report_generator.aggregators.tree_depth_relation_aggregator import (
 from src.report_generator.aggregators.statistics_aggregator import (
     DataseStatisticsAggregator,
 )
+from src.report_generator.postprocessors.auc_postprocessor import AUCPostprocessor
+from src.report_generator.aggregators.auc_aggregator import AucAggregator
 from src.report_generator.postprocessors.base_postprocessor import RawData
 import json
 from collections import defaultdict
@@ -95,6 +97,8 @@ def get_postprocessing_config(data_dir: Path, output_path: Path):
         postprocessors.append(ConvexHullPostprocessor(output_path))
     if run_params["dataset_statistics"] == "True":
         postprocessors.append(StatisticsPostprocessor(output_path))
+    if run_params["area_under_curve"] == "True":
+        postprocessors.append(AUCPostprocessor(output_path))
     return postprocessors
 
 
@@ -146,7 +150,6 @@ def main():
             else args.input_path
         ),
     )
-
     for metric in tested_generators:
         if metric == "k_anonimity":
             KAnonimityAggregator(
@@ -209,10 +212,20 @@ def main():
                 combined_path,
                 tested_generators[metric],
             )()
-        elif metric == "dataset_statistics":
+        elif metric == "dataset_statistics" and args.reference_data_path is not None:
             DataseStatisticsAggregator(
                 args.input_path,
                 args.reference_data_path,
+                combined_path,
+                tested_generators[metric],
+            )()
+        elif metric == "area_under_curve":
+            AucAggregator(
+                (
+                    [*args.input_path, args.reference_data_path]
+                    if args.reference_data_path
+                    else args.input_path
+                ),
                 combined_path,
                 tested_generators[metric],
             )()
