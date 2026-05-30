@@ -40,6 +40,9 @@ from src.report_generator.aggregators.tree_depth_relation_aggregator import (
 from src.report_generator.aggregators.statistics_aggregator import (
     DataseStatisticsAggregator,
 )
+from src.report_generator.aggregators.distribution_aggregator import (
+    DataDistributionAggregator,
+)
 from src.report_generator.postprocessors.auc_postprocessor import AUCPostprocessor
 from src.report_generator.aggregators.auc_aggregator import AucAggregator
 from src.report_generator.postprocessors.base_postprocessor import RawData
@@ -219,6 +222,13 @@ def main():
                 combined_path,
                 tested_generators[metric],
             )()
+            DataDistributionAggregator(
+                args.input_path,
+                args.reference_data_path,
+                combined_path,
+                tested_generators[metric],
+            )()
+
         elif metric == "area_under_curve":
             AucAggregator(
                 (
