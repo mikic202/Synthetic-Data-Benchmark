@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
 from tabpfn import TabPFNRegressor
+from tabicl import TabICLRegressor
 from sklearn.linear_model import LinearRegression
 import torch
 from sklearn.preprocessing import StandardScaler
@@ -90,6 +91,23 @@ def measure_tabpfn_rroc_aoc(
     )
 
 
+def measure_tabicl_rroc_aoc(
+    synthetic_x: list[pd.DataFrame],
+    synthetic_y: list[list[int]],
+    reral_x: pd.DataFrame,
+    real_y: list[int],
+):
+    return measure_rroc_aoc(
+        synthetic_x,
+        synthetic_y,
+        reral_x,
+        real_y,
+        TabICLRegressor,
+        n_estimators=len(reral_x.columns) * 2,
+        device=("cuda" if torch.cuda.is_available() else "cpu"),
+    )
+
+
 def measure_xgb_rroc_aoc(
     synthetic_x: list[pd.DataFrame],
     synthetic_y: list[list[int]],
@@ -146,6 +164,18 @@ def tabpfn_process(
     )
 
 
+def tabicl_process(
+    downstream_results_queue: Queue,
+    synth_x: pd.DataFrame,
+    synth_y: pd.DataFrame,
+    test_x: pd.DataFrame,
+    test_y: pd.DataFrame,
+):
+    downstream_results_queue.put(
+        ("TapICL", measure_tabicl_rroc_aoc([synth_x], [synth_y], test_x, test_y)[0])
+    )
+
+
 def logistic_regression_process(
     downstream_results_queue: Queue,
     synth_x: pd.DataFrame,
@@ -197,6 +227,13 @@ def calculate_rroc_aoc(
             target=tabpfn_process,
             args=(downstream_results_queue, synth_x, synth_y, real_x, real_y),
             name="TabPFNRegressor",
+        )
+    )
+    downstream_jobs.append(
+        Process(
+            target=tabicl_process,
+            args=(downstream_results_queue, synth_x, synth_y, real_x, real_y),
+            name="TabICLRegressor",
         )
     )
 
