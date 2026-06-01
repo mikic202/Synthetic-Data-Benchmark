@@ -4,7 +4,6 @@ from sklearn.metrics import silhouette_score
 import numpy as np
 from heapq import nsmallest
 
-
 MAX_NUMBER_OF_CLUSTERS = 20
 
 
@@ -24,6 +23,6 @@ def calculate_k_anonimity_for_datset(
         )
     return nsmallest(
         1,
-        nsmallest(MAX_NUMBER_OF_CLUSTERS // 5, smallest_ks, key=lambda x: -x[0]),
+        nsmallest(MAX_NUMBER_OF_CLUSTERS // 4, smallest_ks, key=lambda x: -x[0]),
         key=lambda x: x[1],
     )[0][1]
