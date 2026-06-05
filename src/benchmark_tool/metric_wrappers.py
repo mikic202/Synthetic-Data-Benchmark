@@ -36,10 +36,16 @@ class Unlinkability(MetricWrapper):
         return float(metrics.calculate_unlinkability(synthetic, real_train))
 
 
-class DistanceToNearestNeighbour(MetricWrapper):
+class DistanceToNearestRealNeighbour(MetricWrapper):
     @staticmethod
     def __call__(synthetic: pd.DataFrame, real_train: pd.DataFrame, *args, **kwargs):
-        return metrics.calculate_distance_to_nearest_record(synthetic, real_train)
+        return metrics.calculate_distance_to_nearest_real_record(synthetic, real_train)
+
+
+class DistanceToNearestNeighbour(MetricWrapper):
+    @staticmethod
+    def __call__(synthetic: pd.DataFrame, *args, **kwargs):
+        return metrics.calculate_distance_to_nearest_record(synthetic)
 
 
 class DatasetStatistics(MetricWrapper):

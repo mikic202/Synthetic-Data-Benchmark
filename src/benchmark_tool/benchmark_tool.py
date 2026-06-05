@@ -100,6 +100,9 @@ def get_metrics_to_compute(args):
         metrics[DISTANCE_TO_NEAREST_NEIGHBOUR] = (
             metric_wrappers.DistanceToNearestNeighbour()
         )
+        metrics["distance_to_nearest_real_neighbour"] = (
+            metric_wrappers.DistanceToNearestRealNeighbour()
+        )
     if args.dataset_statistics:
         metrics["dataset-statistics"] = metric_wrappers.DatasetStatistics()
     if args.tree_depth_precision_relation:

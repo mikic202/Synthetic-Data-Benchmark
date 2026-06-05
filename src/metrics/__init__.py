@@ -7,6 +7,7 @@ from .difficulty_metrics.model_auc import calculate_auc
 from .privacy_metrics.k_anonimity import calculate_k_anonimity_for_datset
 from .privacy_metrics.distance_to_nearest_neighbour import (
     calculate_distance_to_nearest_record,
+    calculate_distance_to_nearest_real_record,
 )
 from .privacy_metrics.unlinkability import calculate_unlinkability
 from .similarity_metrics.convex_hull import calculate_convex_hull_coverage
