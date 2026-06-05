@@ -14,6 +14,7 @@ from external.tab_pfn_gen.src.tabpfgen.tabpfgen import (
     TabPFGenRegressor,
     TabPFGenClassifier,
     TabICLClassifier,
+    TabICLRegressor,
 )
 from typing import Callable
 from src.constants import (
@@ -54,7 +55,9 @@ def get_clasification_model(args):
             return FullTabpfnGen()
         case "tabiclgen":
             return TabPFGenClassifier(
-                n_sgld_steps=100, clasifier_class=TabICLClassifier
+                n_sgld_steps=100,
+                clasifier_class=TabICLClassifier,
+                regressor_class=TabICLRegressor,
             )
         case "tabpfngen":
             return TabPFGenClassifier(n_sgld_steps=100)
