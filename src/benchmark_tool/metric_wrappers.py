@@ -22,6 +22,14 @@ class KAnonimity(MetricWrapper):
         return int(metrics.calculate_k_anonimity_for_datset(synthetic))
 
 
+class KAnonimityWithReal(MetricWrapper):
+    @staticmethod
+    def __call__(synthetic: pd.DataFrame, real_train: pd.DataFrame, *args, **kwargs):
+        return int(
+            metrics.calculate_k_anonimity_for_datset(pd.concat([synthetic, real_train]))
+        )
+
+
 class Unlinkability(MetricWrapper):
     @staticmethod
     def __call__(synthetic: pd.DataFrame, real_train: pd.DataFrame, *args, **kwargs):

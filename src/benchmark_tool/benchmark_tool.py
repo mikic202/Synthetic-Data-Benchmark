@@ -90,6 +90,7 @@ def get_metrics_to_compute(args):
     metrics = {}
     if args.k_anonimity:
         metrics[K_ANONIMITY] = metric_wrappers.KAnonimity()
+        metrics["k_anonimity_with_real"] = metric_wrappers.KAnonimityWithReal()
     if args.unlinkability:
         metrics[UNLINKABILITY] = metric_wrappers.Unlinkability()
     if args.distance_to_nearest:
