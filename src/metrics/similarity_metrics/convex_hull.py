@@ -39,7 +39,7 @@ def encode_data_to_contionous_space(
     data_representations = model.model_.row_interactor(
         model.model_.col_embedder(
             data_tensor,
-            train_size=len(data_tensor),
+            torch.tensor([0] * len(data), dtype=torch.float32).unsqueeze(0),
             feature_shuffles=None,
             mgr_config=inference_config.COL_CONFIG,
         ),
