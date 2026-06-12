@@ -1,21 +1,10 @@
 from src.benchmark_tool.argparser import parse_args, save_args
-from src.model_wrappers.full_tabpfn_gen import FullTabpfnGen
-from src.model_wrappers.smote_generator import SmoteGenerator, SmoterGenerator
-from src.model_wrappers.ctgan_generator import CTGANGenerator
-from src.model_wrappers.neural_spline_flows_generator import NeuralSplineFlowsGenerator
-from src.model_wrappers.real_data_generator import RealDataGenerator
 from src.test_datasets import clasification_datasets, regression_datasets
 from src.benchmark_tool import metric_wrappers
 import pandas as pd
 import datetime
 from pathlib import Path
 import json
-from external.tab_pfn_gen.src.tabpfgen.tabpfgen import (
-    TabPFGenRegressor,
-    TabPFGenClassifier,
-    TabICLClassifier,
-    TabICLRegressor,
-)
 from typing import Callable
 from src.constants import (
     K_ANONIMITY,
@@ -25,6 +14,7 @@ from src.constants import (
     TREE_DEPTH_RELATION,
     UNLINKABILITY,
 )
+import tqdm
 
 AVAILABLE_CLASSIFICATION_DATASETS = {
     "mfeat_zernike": clasification_datasets.get_mfeat_zernike_dataset,
@@ -48,22 +38,33 @@ AVALIABLE_REGRESSION_DATASETS = {
 def get_clasification_model(args):
     match args.generator_type.lower():
         case "smote":
+            from src.model_wrappers.smote_generator import SmoteGenerator
             return SmoteGenerator()
         case "ctgan":
+            from src.model_wrappers.ctgan_generator import CTGANGenerator
             return CTGANGenerator()
         case "tabpfnunsupervised":
+            from src.model_wrappers.full_tabpfn_gen import FullTabpfnGen
             return FullTabpfnGen()
         case "tabiclgen":
+            from external.tab_pfn_gen.src.tabpfgen.tabpfgen import (
+                TabPFGenClassifier,
+                TabICLClassifier,
+                TabICLRegressor)
             return TabPFGenClassifier(
                 n_sgld_steps=100,
                 clasifier_class=TabICLClassifier,
                 regressor_class=TabICLRegressor,
             )
         case "tabpfngen":
+            from external.tab_pfn_gen.src.tabpfgen.tabpfgen import (
+                TabPFGenClassifier)
             return TabPFGenClassifier(n_sgld_steps=100)
         case "nf":
+            from src.model_wrappers.neural_spline_flows_generator import NeuralSplineFlowsGenerator
             return NeuralSplineFlowsGenerator()
         case "real":
+            from src.model_wrappers.real_data_generator import RealDataGenerator
             return RealDataGenerator()
         case _:
             raise Exception("Chosen generator type is incorrect")
@@ -72,18 +73,29 @@ def get_clasification_model(args):
 def get_regression_model(args):
     match args.generator_type.lower():
         case "smote":
+            from src.model_wrappers.smote_generator import SmoterGenerator
             return SmoterGenerator()
         case "ctgan":
+            from src.model_wrappers.ctgan_generator import CTGANGenerator
             return CTGANGenerator(preprocess=True)
         case "tabpfnunsupervised":
+            from src.model_wrappers.full_tabpfn_gen import FullTabpfnGen
             return FullTabpfnGen()
         case "tabiclgen":
-            return TabPFGenRegressor(n_sgld_steps=100, clasifier_class=TabICLClassifier)
+            from external.tab_pfn_gen.src.tabpfgen.tabpfgen import (
+                TabPFGenRegressor,
+                TabICLClassifier,
+                TabICLRegressor)
+            return TabPFGenRegressor(n_sgld_steps=100, clasifier_class=TabICLClassifier, regressor_class=TabICLRegressor)
         case "tabpfngen":
+            from external.tab_pfn_gen.src.tabpfgen.tabpfgen import (
+                TabPFGenRegressor)
             return TabPFGenRegressor(n_sgld_steps=100)
         case "nf":
+            from src.model_wrappers.neural_spline_flows_generator import NeuralSplineFlowsGenerator
             return NeuralSplineFlowsGenerator()
         case "real":
+            from src.model_wrappers.real_data_generator import RealDataGenerator
             return RealDataGenerator()
         case _:
             raise Exception("Chosen generator type is incorrect")
@@ -147,9 +159,11 @@ def generate_model_metrics(
     metrics: list[metric_wrappers.MetricWrapper],
     number_of_repetitions: int,
 ):
-    for dataset_name, dataset_getter in datasets.items():
+    progress_bar = tqdm.tqdm(datasets.items())
+    for dataset_name, dataset_getter in progress_bar:
         (current_output_path / dataset_name).mkdir(exist_ok=True, parents=True)
         for run_number in range(number_of_repetitions):
+            progress_bar.set_description(f"Testing dataset {dataset_name}, iteration {run_number}/{number_of_repetitions}")
             current_run_results = {}
             train, test = dataset_getter()
             synth = generate_samples(train, target, model)
