@@ -35,7 +35,7 @@ def get_sleep_deprivation_and_cognitive_performance_regression_dataset(
     dataset, _, _, _ = openml.datasets.get_dataset(46754).get_data(
         dataset_format="dataframe"
     )
-    dataset = dataset.drop(columns=["Participant_ID"], axis=1)
+    dataset = dataset.drop(columns=["Participant_ID"])
     dataset["Gender"] = dataset["Gender"].factorize()[0]
     dataset = dataset.rename(columns={"Stress_Level": REGRESION_TARGET})
     return train_test_split(dataset, test_size=test_size, random_state=42)
