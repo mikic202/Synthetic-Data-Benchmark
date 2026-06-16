@@ -39,6 +39,6 @@ class CTGANGenerator:
             scaled_data = self._min_max_scaler.inverse_transform(synthetic_data.values)
             synthetic_data = pd.DataFrame(scaled_data, columns=synthetic_data.columns)
         return (
-            synthetic_data.drop(columns=[CTGANGenerator.TARGET], axis=1),
+            synthetic_data.drop(columns=[CTGANGenerator.TARGET]),
             synthetic_data[CTGANGenerator.TARGET],
         )

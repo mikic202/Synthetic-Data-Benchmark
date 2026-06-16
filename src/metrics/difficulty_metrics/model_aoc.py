@@ -36,7 +36,7 @@ def measure_rroc_aoc(
         errors = predicted_y - real_y
         areas_under_curve.append(
             (
-                np.var(errors) / 2.0 * (len(errors) ** 2),
+                str(np.var(errors) / 2.0 * (len(errors) ** 2)),
                 regressor.score(scalled_real_x, real_y),
             )
         )
