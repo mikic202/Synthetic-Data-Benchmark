@@ -2,7 +2,7 @@ from pathlib import Path
 from src.report_generator.aggregators.single_value_aggregator import (
     SingleValueAggregator,
 )
-from src.constants import DISTANCE_TO_NEAREST_NEIGHBOUR
+from src.constants import DISTANCE_TO_NEAREST_NEIGHBOUR, DISTANCE_TO_NEAREST_REAL_NEIGHBOUR
 
 
 class DistanceToNearestNeigbourAggregator(SingleValueAggregator):
@@ -11,4 +11,12 @@ class DistanceToNearestNeigbourAggregator(SingleValueAggregator):
     ) -> None:
         super().__init__(
             input_paths, output_path, generator_types, DISTANCE_TO_NEAREST_NEIGHBOUR
+        )
+
+class DistanceToNearestRealNeigbourAggregator(SingleValueAggregator):
+    def __init__(
+        self, input_paths: list[Path], output_path: Path, generator_types: list[str]
+    ) -> None:
+        super().__init__(
+            input_paths, output_path, generator_types, DISTANCE_TO_NEAREST_REAL_NEIGHBOUR
         )

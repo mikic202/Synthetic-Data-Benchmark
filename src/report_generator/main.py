@@ -22,7 +22,7 @@ from src.report_generator.postprocessors.convex_hull_postprocessor import (
     ConvexHullPostprocessor,
 )
 from src.report_generator.aggregators.k_anonimity_aggregator import (
-    KAnonimityAggregator,
+    KAnonimityAggregator, KAnonimityWithRealAggregator
 )
 from src.report_generator.aggregators.convex_hull_aggregator import ConvexHullAggregator
 from src.report_generator.aggregators.unlinkability_aggregator import (
@@ -32,7 +32,7 @@ from src.report_generator.aggregators.svn_discrimination_aggregator import (
     SvnDiscriminationAggregator,
 )
 from src.report_generator.aggregators.distance_to_nearest_aggregator import (
-    DistanceToNearestNeigbourAggregator,
+    DistanceToNearestNeigbourAggregator, DistanceToNearestRealNeigbourAggregator
 )
 from src.report_generator.aggregators.tree_depth_relation_aggregator import (
     TreeDepthRelationAggregator,
@@ -167,6 +167,15 @@ def main():
                 combined_path,
                 tested_generators[metric],
             )()
+            KAnonimityWithRealAggregator(
+                (
+                    [*args.input_path, args.reference_data_path]
+                    if args.reference_data_path
+                    else args.input_path
+                ),
+                combined_path,
+                tested_generators[metric],
+            )()
         elif metric == "convex_hull":
             ConvexHullAggregator(
                 (
@@ -200,6 +209,15 @@ def main():
             )()
         elif metric == "distance_to_nearest":
             DistanceToNearestNeigbourAggregator(
+                (
+                    [*args.input_path, args.reference_data_path]
+                    if args.reference_data_path
+                    else args.input_path
+                ),
+                combined_path,
+                tested_generators[metric],
+            )()
+            DistanceToNearestRealNeigbourAggregator(
                 (
                     [*args.input_path, args.reference_data_path]
                     if args.reference_data_path

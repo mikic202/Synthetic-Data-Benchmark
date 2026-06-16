@@ -2,7 +2,7 @@ from pathlib import Path
 from src.report_generator.aggregators.single_value_aggregator import (
     SingleValueAggregator,
 )
-from src.constants import K_ANONIMITY
+from src.constants import K_ANONIMITY, K_ANONIMITY_WITH_REAL
 
 
 class KAnonimityAggregator(SingleValueAggregator):
@@ -10,3 +10,9 @@ class KAnonimityAggregator(SingleValueAggregator):
         self, input_paths: list[Path], output_path: Path, generator_types: list[str]
     ) -> None:
         super().__init__(input_paths, output_path, generator_types, K_ANONIMITY)
+
+class KAnonimityWithRealAggregator(SingleValueAggregator):
+    def __init__(
+        self, input_paths: list[Path], output_path: Path, generator_types: list[str]
+    ) -> None:
+        super().__init__(input_paths, output_path, generator_types, K_ANONIMITY_WITH_REAL)
