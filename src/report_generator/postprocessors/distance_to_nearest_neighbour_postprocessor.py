@@ -9,14 +9,15 @@ from src.constants import DISTANCE_TO_NEAREST_NEIGHBOUR
 
 
 class DistanceToNearestNeighbourPostprocessor(BasePostprocessor):
-    def __init__(self, output_path: Path) -> None:
+    def __init__(self, output_path: Path, data_key = DISTANCE_TO_NEAREST_NEIGHBOUR) -> None:
         self._output_path = output_path
+        self._data_key = data_key
 
     def __call__(self, raw_data: RawData) -> None:
         averages_per_clasification_dataset = {}
         stds_per_clasification_dataset = {}
         for dataset_name, dataset_results in raw_data.clasification_results[
-            DISTANCE_TO_NEAREST_NEIGHBOUR
+            self._data_key
         ].items():
             averages_per_clasification_dataset[dataset_name] = statistics.mean(
                 [float(result["mean"]) for result in dataset_results]
@@ -29,7 +30,7 @@ class DistanceToNearestNeighbourPostprocessor(BasePostprocessor):
         stds_per_regression_dataset = {}
 
         for dataset_name, dataset_results in raw_data.regression_results[
-            DISTANCE_TO_NEAREST_NEIGHBOUR
+            self._data_key
         ].items():
             averages_per_regression_dataset[dataset_name] = statistics.mean(
                 [float(result["mean"]) for result in dataset_results]

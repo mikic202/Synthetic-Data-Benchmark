@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 from src.report_generator.postprocessors.k_anonimity_postprocesssor import (
-    KAnonimityPostprocessor,
+    KAnonimityPostprocessor, KAnonimityWithRealPostprocessor
 )
 from src.report_generator.postprocessors.distance_to_nearest_neighbour_postprocessor import (
     DistanceToNearestNeighbourPostprocessor,
@@ -48,6 +48,7 @@ from src.report_generator.aggregators.auc_aggregator import AucAggregator
 from src.report_generator.postprocessors.base_postprocessor import RawData
 import json
 from collections import defaultdict
+from src.constants import DISTANCE_TO_NEAREST_REAL_NEIGHBOUR
 
 
 def parse_args():
@@ -88,8 +89,10 @@ def get_postprocessing_config(data_dir: Path, output_path: Path):
     postprocessors = []
     if run_params["k_anonimity"] == "True":
         postprocessors.append(KAnonimityPostprocessor(output_path))
+        postprocessors.append(KAnonimityWithRealPostprocessor(output_path))
     if run_params["distance_to_nearest"] == "True":
         postprocessors.append(DistanceToNearestNeighbourPostprocessor(output_path))
+        postprocessors.append(DistanceToNearestNeighbourPostprocessor(output_path, DISTANCE_TO_NEAREST_REAL_NEIGHBOUR))
     if run_params["unlinkability"] == "True":
         postprocessors.append(UnlinkabilityPostprocessor(output_path))
     if run_params["tree_depth_precision_relation"] == "True":
