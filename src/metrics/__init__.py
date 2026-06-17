@@ -15,3 +15,4 @@ from .similarity_metrics.discriminator import (
     calculate_xgb_descrimination,
 )
 from .quality_metrics.dataset_statistics import calculate_dataset_statistics
+from .similarity_metrics.identity import get_number_of_real_examples_in_synthetic, get_identical_samples_ids

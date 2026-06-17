@@ -126,6 +126,8 @@ def get_metrics_to_compute(args):
         metrics[CONVEX_HULL] = metric_wrappers.ConvexHull()
     if args.svn_discrimination:
         metrics[DISCRIMINATION] = metric_wrappers.Discrimination()
+    if args.identity:
+        metrics["identity"] = metric_wrappers.Identity()
     return metrics
 
 

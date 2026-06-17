@@ -114,3 +114,16 @@ class Discrimination(MetricWrapper):
         return metrics.calculate_xgb_descrimination(
             pd.concat([real_test, real_train]), synthetic
         )
+
+
+class Identity(MetricWrapper):
+    @staticmethod
+    def __call__(
+        synthetic: pd.DataFrame,
+        real_train: pd.DataFrame,
+        *args,
+        **kwargs,
+    ):
+        return metrics.get_number_of_real_examples_in_synthetic(
+           real_train, synthetic
+        )

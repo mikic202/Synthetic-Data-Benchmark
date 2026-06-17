@@ -81,6 +81,12 @@ def parse_args():
         action="store_true",
         help="Compute how well svn discriminates examples",
     )
+    parser.add_argument(
+        "-i",
+        "--identity",
+        action="store_true",
+        help="Compute how many samples are similar between real and sythetic data",
+    )
 
     return parser.parse_args()
 
