@@ -106,9 +106,9 @@ class DataDistributionAggregator:
                         )
                     )
                 if distribution_distances:
-                    average_distance[dataset][algorithm] = statistics.mean(
+                    average_distance[dataset][algorithm] = np.mean(
                         distribution_distances
                     )
-        pd.DataFrame(average_distance).to_latex(
+        pd.DataFrame(average_distance).T.to_latex(
             self._output_path / f"{self._filename}.tex",
         )

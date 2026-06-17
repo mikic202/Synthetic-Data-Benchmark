@@ -6,6 +6,7 @@ from src.report_generator.postprocessors.base_postprocessor import (
 import statistics
 import json
 from src.constants import DISTANCE_TO_NEAREST_NEIGHBOUR
+import numpy as np
 
 
 class DistanceToNearestNeighbourPostprocessor(BasePostprocessor):
@@ -19,10 +20,10 @@ class DistanceToNearestNeighbourPostprocessor(BasePostprocessor):
         for dataset_name, dataset_results in raw_data.clasification_results[
             self._data_key
         ].items():
-            averages_per_clasification_dataset[dataset_name] = statistics.mean(
+            averages_per_clasification_dataset[dataset_name] = np.mean(
                 [float(result["mean"]) for result in dataset_results]
             )
-            stds_per_clasification_dataset[dataset_name] = statistics.stdev(
+            stds_per_clasification_dataset[dataset_name] = np.std(
                 [float(result["mean"]) for result in dataset_results]
             )
 
@@ -32,15 +33,15 @@ class DistanceToNearestNeighbourPostprocessor(BasePostprocessor):
         for dataset_name, dataset_results in raw_data.regression_results[
             self._data_key
         ].items():
-            averages_per_regression_dataset[dataset_name] = statistics.mean(
+            averages_per_regression_dataset[dataset_name] = np.mean(
                 [float(result["mean"]) for result in dataset_results]
             )
-            stds_per_regression_dataset[dataset_name] = statistics.stdev(
+            stds_per_regression_dataset[dataset_name] = np.std(
                 [float(result["mean"]) for result in dataset_results]
             )
 
         with open(
-            self._output_path / "distance-to-nearest.json", "w"
+            self._output_path / f"{self._data_key}.json", "w"
         ) as processed_result_files:
             json.dump(
                 {
@@ -48,29 +49,29 @@ class DistanceToNearestNeighbourPostprocessor(BasePostprocessor):
                     "reg_dataset_avg": averages_per_regression_dataset,
                     "cl_dataset_std": stds_per_clasification_dataset,
                     "reg_dataset_std": stds_per_regression_dataset,
-                    "clasification_avg": statistics.mean(
-                        averages_per_clasification_dataset.values()
+                    "clasification_avg": np.mean(
+                        list(averages_per_clasification_dataset.values())
                     ),
-                    "regression_avg": statistics.mean(
-                        averages_per_regression_dataset.values()
+                    "regression_avg": np.mean(
+                        list(averages_per_regression_dataset.values())
                     ),
-                    "avg": statistics.mean(
-                        {
+                    "avg": np.mean(
+                        list({
                             **averages_per_clasification_dataset,
                             **averages_per_regression_dataset,
-                        }.values()
+                        }.values())
                     ),
-                    "std": statistics.stdev(
-                        {
+                    "std": np.std(
+                        list({
                             **averages_per_clasification_dataset,
                             **averages_per_regression_dataset,
-                        }.values()
+                        }.values())
                     ),
-                    "clasification_std": statistics.stdev(
-                        averages_per_clasification_dataset.values()
+                    "clasification_std": np.std(
+                        list(averages_per_clasification_dataset.values())
                     ),
-                    "regression_std": statistics.stdev(
-                        averages_per_regression_dataset.values()
+                    "regression_std": np.std(
+                        list(averages_per_regression_dataset.values())
                     ),
                 },
                 processed_result_files,
