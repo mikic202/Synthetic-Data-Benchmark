@@ -1,6 +1,8 @@
 K_ANONIMITY = "k-anonimity"
+K_ANONIMITY_WITH_REAL = "k_anonimity_with_real"
 CONVEX_HULL = "convex-hull"
 DISTANCE_TO_NEAREST_NEIGHBOUR = "distance-to-nearest"
+DISTANCE_TO_NEAREST_REAL_NEIGHBOUR = "distance_to_nearest_real_neighbour"
 DISCRIMINATION = "svn-discrimination"
 TREE_DEPTH_RELATION = "tree-depth-precision-relation"
 UNLINKABILITY = "unlinkability"
