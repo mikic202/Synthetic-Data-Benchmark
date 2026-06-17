@@ -33,11 +33,11 @@ class AUCPostprocessor(BasePostprocessor):
                 ]
             )
 
-        combined_clasification = pd.concat(results_for_clasification, axis=1).T
-        combined_regression = pd.concat(results_for_regression, axis=1).T
+        combined_clasification = pd.concat(results_for_clasification, axis=1).T.astype(float)
+        combined_regression = pd.concat(results_for_regression, axis=1).T.astype(float)
         combined_both = pd.concat(
             results_for_clasification + results_for_regression, axis=1
-        ).T
+        ).T.astype(float)
         with open(self._output_path, "w") as processed_result_files:
             json.dump(
                 {
