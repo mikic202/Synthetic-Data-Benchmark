@@ -8,6 +8,9 @@ from nflows.transforms.autoregressive import (
 from nflows import distributions, flows
 import numpy as np
 from sklearn import preprocessing
+from src.metrics import (
+    NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION,
+)
 
 
 # not ever parameter from the original TabPFNGen code is used here
@@ -31,7 +34,7 @@ class NeuralSplineFlowsGenerator:
         self._batch_norm = batch_norm
         self._flow = None
         self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self._min_max_scaler = preprocessing.MinMaxScaler()
+        self._min_max_scaler = preprocessing.StandardScaler()
 
     def _build_flow(self, n_features: int):
         transforms_list = []
@@ -125,6 +128,14 @@ class NeuralSplineFlowsGenerator:
             data = data.iloc[indices]
         self.fit(data.to_numpy(), **kwargs)
         samples = self.sample(n_samples)
+        print(samples[:, -1])
         samples = self._min_max_scaler.inverse_transform(samples)
         samples = pd.DataFrame(samples, columns=data.columns)
-        return samples.drop(columns=["target"], axis=1), samples["target"]
+        target = samples["target"]
+        print(target)
+        if len(np.unique(y_train)) <= NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION:
+            target = target.round()
+        print(np.unique(y_train))
+        print(np.unique(target))
+
+        return samples.drop(columns=["target"], axis=1), target

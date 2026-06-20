@@ -25,6 +25,7 @@ def parse_args():
             "tabpfnunsupervised",
             "nf",
             "real",
+            "random",
         ],
         help="Choose which generator type needs to be benchamrked",
     )

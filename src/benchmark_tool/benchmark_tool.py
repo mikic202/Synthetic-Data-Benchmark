@@ -67,6 +67,9 @@ def get_clasification_model(args):
         case "real":
             from src.model_wrappers.real_data_generator import RealDataGenerator
             return RealDataGenerator()
+        case "random":
+            from src.model_wrappers.random_generator import RandomGenerator
+            return RandomGenerator()
         case _:
             raise Exception("Chosen generator type is incorrect")
 
@@ -98,6 +101,9 @@ def get_regression_model(args):
         case "real":
             from src.model_wrappers.real_data_generator import RealDataGenerator
             return RealDataGenerator()
+        case "random":
+            from src.model_wrappers.random_generator import RandomGenerator
+            return RandomGenerator()
         case _:
             raise Exception("Chosen generator type is incorrect")
 
