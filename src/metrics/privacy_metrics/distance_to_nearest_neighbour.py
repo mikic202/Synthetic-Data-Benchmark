@@ -10,9 +10,9 @@ def calculate_distance_to_nearest_record(
     if not identifier_atributes:
         identifier_atributes = synthetic_dataset.columns.tolist()
 
-    model = NearestNeighbors(n_neighbors=1)
+    model = NearestNeighbors(n_neighbors=2)
     model.fit(synthetic_dataset[identifier_atributes])
-    distances, _ = model.kneighbors(synthetic_dataset[identifier_atributes])
+    distances = model.kneighbors(synthetic_dataset[identifier_atributes])[0][:, 1]
     return {
         "mean": np.mean(distances),
         "std": np.std(distances),
