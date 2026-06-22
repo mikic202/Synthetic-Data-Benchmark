@@ -6,9 +6,16 @@ from sklearn import preprocessing
 class CTGANGenerator:
     TARGET = "target"
 
-    def __init__(self, epochs: int = 300, preprocess: bool = False):
+    def __init__(self, epochs: int = 400, preprocess: bool = False):
         self.epochs = epochs
-        self.model = CTGAN(epochs=self.epochs)
+        self.model = CTGAN(epochs=self.epochs, generator_dim=(512, 256),
+                            discriminator_dim=(512, 256),
+                            discriminator_steps=1,
+                            generator_lr=2e-4,
+                            discriminator_lr=2e-4,
+                            generator_decay=5e-4,
+                            discriminator_decay=5e-4,
+                            batch_size=350)
         if preprocess:
             self._min_max_scaler = preprocessing.MinMaxScaler()
         else:
