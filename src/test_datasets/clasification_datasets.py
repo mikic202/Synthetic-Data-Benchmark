@@ -69,5 +69,6 @@ def get_pulsar_dataset(test_size: float = 0.1) -> tuple[pd.DataFrame, pd.DataFra
     path = kagglehub.dataset_download("charitarth/pulsar-dataset-htru2")
     print(path + "/HTRU_2.csv")
     dataset = pd.read_csv(path + "/HTRU_2.csv", sep=",", header=None)
-    dataset = dataset.rename(columns={8: "target"}).astype("float32")
+    dataset.columns = [f"{i}" for i in range(8)] + [CLASYFICATION_TARGET]
+    dataset = dataset.astype("float32")
     return train_test_split(dataset, test_size=test_size, random_state=42)
