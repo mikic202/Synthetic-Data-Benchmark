@@ -72,3 +72,11 @@ def get_pulsar_dataset(test_size: float = 0.1) -> tuple[pd.DataFrame, pd.DataFra
     dataset.columns = [f"{i}" for i in range(8)] + [CLASYFICATION_TARGET]
     dataset = dataset.astype("float32")
     return train_test_split(dataset, test_size=test_size, random_state=42)
+
+
+def get_heart_disease_dataset(test_size: float = 0.1) -> tuple[pd.DataFrame, pd.DataFrame]:
+    dataset, _, _, _ = openml.datasets.get_dataset(43672).get_data(
+        dataset_format="dataframe"
+    )
+    dataset = dataset.rename(columns={"target": CLASYFICATION_TARGET}).astype("float32")
+    return train_test_split(dataset, test_size=test_size, random_state=42)

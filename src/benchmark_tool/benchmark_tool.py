@@ -23,7 +23,8 @@ AVAILABLE_CLASSIFICATION_DATASETS = {
     "climate_model_simulation": clasification_datasets.get_climate_model_simulation_dataset,
     "wdbc": clasification_datasets.get_wdbc_dataset,
     "analcatdata_authorship": clasification_datasets.get_analcatdata_authorship_dataset,
-    "pulsar": clasification_datasets.get_pulsar_dataset,
+    "heart_diseasee_dataset": clasification_datasets.get_heart_disease_dataset,
+    # "pulsar": clasification_datasets.get_pulsar_dataset,
     # "cardiovascular": clasification_datasets.get_cardiovascular_dataset,
 }
 
