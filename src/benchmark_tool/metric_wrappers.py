@@ -83,7 +83,7 @@ class ModelAuc(MetricWrapper):
         ):
             return metrics.calculate_auc(synth_x, synth_y, test_x, test_y)
         else:
-            return metrics.calculate_rroc_aoc(synth_x, synth_y, test_x, test_y)
+            return metrics.calculate_concordance_index(synth_x, synth_y, test_x, test_y)
 
 
 class ConvexHull(MetricWrapper):

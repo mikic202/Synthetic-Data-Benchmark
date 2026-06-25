@@ -16,3 +16,4 @@ from .similarity_metrics.discriminator import (
 )
 from .quality_metrics.dataset_statistics import calculate_dataset_statistics
 from .similarity_metrics.identity import get_number_of_real_examples_in_synthetic, get_identical_samples_ids
+from .difficulty_metrics.concordance_index import calculate_concordance_index
