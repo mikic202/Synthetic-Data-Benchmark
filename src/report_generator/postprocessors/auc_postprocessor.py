@@ -9,7 +9,7 @@ import pandas as pd
 
 class AUCPostprocessor(BasePostprocessor):
     def __init__(self, output_path: Path) -> None:
-        self._output_path = output_path / f"auc.json"
+        self._output_path = output_path / "auc.json"
 
     def __call__(self, raw_data: RawData) -> None:
 

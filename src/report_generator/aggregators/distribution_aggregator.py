@@ -1,7 +1,6 @@
 from pathlib import Path
 import glob
 import numpy as np
-import statistics
 import pandas as pd
 from src.benchmark_tool.benchmark_tool import (
     AVAILABLE_CLASSIFICATION_DATASETS,
@@ -33,10 +32,10 @@ class DataDistributionAggregator:
             input_paths,
         ):
             self._csv_file_paths[generator_type] = self._groupby_dataset(
-                list(glob.glob(str(data_path / f"**/*.csv"), recursive=True))
+                list(glob.glob(str(data_path / "**/*.csv"), recursive=True))
             )
         self._reference_csv_files = self._groupby_dataset(
-            list(glob.glob(str(reference_data_path / f"**/*.csv"), recursive=True))
+            list(glob.glob(str(reference_data_path / "**/*.csv"), recursive=True))
         )
 
     def _groupby_dataset(self, file_paths: list[str]):

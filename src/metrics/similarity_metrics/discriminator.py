@@ -1,6 +1,6 @@
 import pandas as pd
 from xgboost import XGBClassifier
-from sklearn.model_selection import train_test_split, ShuffleSplit
+from sklearn.model_selection import ShuffleSplit
 import numpy as np
 
 

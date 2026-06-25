@@ -15,7 +15,7 @@ class AucAggregator:
         self._file_paths = [
             found_file
             for path, is_metric_generated in zip(input_paths, generator_types)
-            for found_file in glob.glob(str(path / f"**/auc.json"), recursive=True)
+            for found_file in glob.glob(str(path / "**/auc.json"), recursive=True)
             if is_metric_generated
         ]
         self._generator_types = generator_types
@@ -32,8 +32,8 @@ class AucAggregator:
             clasification_results[generator_type] = data["clasification_avg"]
             regression_results[generator_type] = data["regression_avg"]
         pd.DataFrame(clasification_results).to_latex(
-            self._output_path / f"auc_clasification.tex"
+            self._output_path / "auc_clasification.tex"
         )
         pd.DataFrame(regression_results).to_latex(
-            self._output_path / f"auc_regression.tex"
+            self._output_path / "auc_regression.tex"
         )

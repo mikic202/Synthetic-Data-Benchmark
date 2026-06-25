@@ -3,7 +3,6 @@ from src.report_generator.postprocessors.base_postprocessor import (
     BasePostprocessor,
     RawData,
 )
-import statistics
 import json
 from src.constants import DISTANCE_TO_NEAREST_NEIGHBOUR
 import numpy as np

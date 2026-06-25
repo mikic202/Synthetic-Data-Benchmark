@@ -6,11 +6,6 @@ from tabpfn import TabPFNRegressor
 from tabicl import TabICLRegressor
 from sklearn.linear_model import LinearRegression
 import torch
-from sklearn.preprocessing import StandardScaler
-from multiprocessing import Process, Queue
-import multiprocessing as mp
-import torch
-from sklearn.preprocessing import StandardScaler
 from multiprocessing import Process, Queue
 import multiprocessing as mp
 from logging import getLogger
