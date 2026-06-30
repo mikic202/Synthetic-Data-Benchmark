@@ -31,8 +31,7 @@ def measure_k_anonimity_for_datset(
 
 
 def calculate_k_anonimity_for_datset(dataset: pd.DataFrame, identifier_atributes: list[str] | None = None, number_of_repetitions: int = 5):
-    with ProcessPoolExecutor(max_workers=None) as executor:
-        results = list(executor.map(k_anonimity_process_worker, [(dataset, identifier_atributes, random.randint(0, 100)) for _ in range(number_of_repetitions)]))
+    results = list(map(k_anonimity_process_worker, [(dataset, identifier_atributes, random.randint(0, 100)) for _ in range(number_of_repetitions)]))
     return sum(results) / len(results)
 
 def k_anonimity_process_worker(args):
