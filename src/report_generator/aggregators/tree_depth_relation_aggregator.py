@@ -39,11 +39,13 @@ class TreeDepthRelationAggregator:
     def __call__(self) -> Any:
         clasification_results = defaultdict(dict)
         regression_results = defaultdict(dict)
+        areas_under_curve = {}
         for generator_type, k_aninimity_path in zip(
             self._generator_types, self._file_paths
         ):
             with open(k_aninimity_path) as k_aninimity_file:
                 data = json.load(k_aninimity_file)
+            areas_under_curve[generator_type] = data["area_under_curve"]
             for dataset, values in data["clasification"].items():
                 clasification_results[dataset][generator_type] = values[0]
             for dataset, values in data["regression"].items():
@@ -74,4 +76,4 @@ class TreeDepthRelationAggregator:
             plt.savefig(self._output_path / dataset)
             plt.close()
             self._save_cosine_similarity(data, self._output_path / (dataset + ".tex"))
-        # dataframe.to_latex(self._output_path / f"{self._filename}.tex")
+        pd.DataFrame(areas_under_curve).to_latex(self._output_path  / "tree_auc.tex")
