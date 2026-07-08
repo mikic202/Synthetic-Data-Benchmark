@@ -6,6 +6,7 @@ import datetime
 from pathlib import Path
 import json
 from typing import Callable
+import torch
 from src.constants import (
     K_ANONIMITY,
     CONVEX_HULL,
@@ -23,7 +24,8 @@ AVAILABLE_CLASSIFICATION_DATASETS = {
     "climate_model_simulation": clasification_datasets.get_climate_model_simulation_dataset,
     "wdbc": clasification_datasets.get_wdbc_dataset,
     "analcatdata_authorship": clasification_datasets.get_analcatdata_authorship_dataset,
-    "heart_diseasee_dataset": clasification_datasets.get_heart_disease_dataset,
+    "mushroom_clasification": clasification_datasets.get_mushroom_clasification_dataset,
+    # "heart_diseasee_dataset": clasification_datasets.get_heart_disease_dataset,
     # "pulsar": clasification_datasets.get_pulsar_dataset,
     # "cardiovascular": clasification_datasets.get_cardiovascular_dataset,
 }
@@ -48,7 +50,7 @@ def get_clasification_model(args):
             return CTGANGenerator()
         case "tabpfnunsupervised":
             from src.model_wrappers.full_tabpfn_gen import FullTabpfnGen
-            return FullTabpfnGen()
+            return FullTabpfnGen(("cuda" if torch.cuda.is_available() else "cpu"))
         case "tabiclgen":
             from external.tab_pfn_gen.src.tabpfgen.tabpfgen import (
                 TabPFGenClassifier,
@@ -86,7 +88,7 @@ def get_regression_model(args):
             return CTGANGenerator(preprocess=True)
         case "tabpfnunsupervised":
             from src.model_wrappers.full_tabpfn_gen import FullTabpfnGen
-            return FullTabpfnGen()
+            return FullTabpfnGen(("cuda" if torch.cuda.is_available() else "cpu"))
         case "tabiclgen":
             from external.tab_pfn_gen.src.tabpfgen.tabpfgen import (
                 TabPFGenRegressor,

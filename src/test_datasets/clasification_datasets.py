@@ -80,3 +80,11 @@ def get_heart_disease_dataset(test_size: float = 0.1) -> tuple[pd.DataFrame, pd.
     )
     dataset = dataset.rename(columns={"target": CLASYFICATION_TARGET}).astype("float32")
     return train_test_split(dataset, test_size=test_size, random_state=42)
+
+
+def get_mushroom_clasification_dataset(test_size: float = 0.1) -> tuple[pd.DataFrame, pd.DataFrame]:
+    dataset, _, _, _ = openml.datasets.get_dataset(24).get_data(
+        dataset_format="dataframe"
+    )
+    dataset = dataset.rename(columns={"class": CLASYFICATION_TARGET}).astype("float32")
+    return train_test_split(dataset, test_size=test_size, random_state=42)
