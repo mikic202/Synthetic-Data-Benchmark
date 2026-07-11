@@ -2,6 +2,8 @@ from tabpfn_extensions import unsupervised
 from tabpfn import TabPFNClassifier, TabPFNRegressor
 import pandas as pd
 import torch
+import os
+import numpy as np
 from typing import Callable
 
 
@@ -29,7 +31,8 @@ class FullTabpfnGen(unsupervised.TabPFNUnsupervisedModel):
     ):
 
         train_data = X_train.copy()
-        train_data["target"] = y_train
+        train_data.insert(0, "target", y_train)
+        # train_data["target"] = y_train
         data = torch.tensor(train_data.to_numpy())
 
         if self._column_order_getter:
@@ -49,16 +52,35 @@ class FullTabpfnGen(unsupervised.TabPFNUnsupervisedModel):
         self.set_categorical_features(categorical_features)
         self.fit(data)
 
-        synthetic_data = self.generate_synthetic_data(
-            n_samples=n_samples,
+        assert hasattr(
+            self,
+            "X_",
+        ), "You need to fit the model before generating synthetic data"
+
+        fast_mode = os.environ.get("FAST_TEST_MODE", "0") == "1"
+
+        actual_n_permutations = 1 if fast_mode else 3
+
+        X = torch.zeros(n_samples, data.shape[1]) * np.nan
+        X[:, 0] = torch.tensor(y_train)
+
+        synthetic_data = self.impute_(
+            X,
             t=temp,
+            condition_on_all_features=False,
+            n_permutations=actual_n_permutations,
+            fast_mode=fast_mode,
         )
+
+
         synthetic_data = pd.DataFrame(synthetic_data, columns=train_data.columns)
+        rounded_target = synthetic_data["target"].round()
         return (
             synthetic_data.drop("target", axis=1),
             (
-                (synthetic_data["target"].round() - 1).to_list()
-                if min(synthetic_data["target"].round()) > 0
-                else synthetic_data["target"].round().to_list()
+                (rounded_target - 1).to_list()
+                if min(rounded_target) > 0
+                else (rounded_target + 1).to_list() if min(rounded_target) < 0
+                else rounded_target.to_list()
             ),
         )
