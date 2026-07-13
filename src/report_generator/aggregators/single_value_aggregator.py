@@ -3,7 +3,14 @@ import glob
 from typing import Any
 import json
 import pandas as pd
+from src.benchmark_tool.benchmark_tool import (
+    AVAILABLE_CLASSIFICATION_DATASETS,
+    AVALIABLE_REGRESSION_DATASETS,
+)
 
+dataset_names = list(AVAILABLE_CLASSIFICATION_DATASETS.keys()) + list(
+    AVALIABLE_REGRESSION_DATASETS.keys()
+)
 
 class SingleValueAggregator:
     def __init__(
@@ -41,8 +48,8 @@ class SingleValueAggregator:
                 **data["cl_dataset_std"],
                 **data["reg_dataset_std"],
             }
-        dataframe = pd.DataFrame(results)
-        std_dataframe = pd.DataFrame(result_stds)
+        dataframe = pd.DataFrame(results).reindex(dataset_names)
+        std_dataframe = pd.DataFrame(result_stds).reindex(dataset_names)
         (
             dataframe.map("${:.2f}".format)
             + " \pm "
