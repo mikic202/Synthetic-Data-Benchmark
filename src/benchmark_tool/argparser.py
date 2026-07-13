@@ -26,6 +26,7 @@ def parse_args():
             "nf",
             "real",
             "random",
+            "tabddpm",
         ],
         help="Choose which generator type needs to be benchamrked",
     )

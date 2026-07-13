@@ -1,3 +1,6 @@
 [submodule "external/tab_pfn_gen"]
 	path = external/tab_pfn_gen
 	url = git@github.com:mikic202/TabPFGen.git
+[submodule "external/tabddpm"]
+	path = external/tabddpm
+	url = git@github.com:yandex-research/tab-ddpm.git

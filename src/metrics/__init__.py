@@ -4,7 +4,7 @@ from .difficulty_metrics.minimal_tree import (
 )
 from .difficulty_metrics.model_aoc import calculate_rroc_aoc
 from .difficulty_metrics.model_auc import calculate_auc
-from .privacy_metrics.k_anonimity import calculate_k_anonimity_for_datset
+from .privacy_metrics.k_anonimity import calculate_k_anonimity_for_datset, calculate_relative_k_anonimity_for_dataset
 from .privacy_metrics.distance_to_nearest_neighbour import (
     calculate_distance_to_nearest_record,
     calculate_distance_to_nearest_real_record,

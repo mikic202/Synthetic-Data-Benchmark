@@ -12,3 +12,4 @@ wheels/
 *.png
 *.tex
 *.csv
+tmp/
