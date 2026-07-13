@@ -11,9 +11,7 @@ from sklearn.preprocessing import StandardScaler
 from multiprocessing import Process, Queue
 import multiprocessing as mp
 from logging import getLogger
-from src.metrics import (
-    NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION,
-)
+
 
 logger = getLogger(__name__)
 
@@ -239,17 +237,13 @@ def calculate_auc(
             name="XGBClassifier",
         )
     )
-    if (
-        real_y.nunique() <= NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION
-        and synth_y.nunique() <= NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION
-    ):
-        downstream_jobs.append(
-            Process(
-                target=tabpfn_process,
-                args=(downstream_results_queue, synth_x, synth_y, real_x, real_y),
-                name="TabPFNClassifier",
-            )
+    downstream_jobs.append(
+        Process(
+            target=tabpfn_process,
+            args=(downstream_results_queue, synth_x, synth_y, real_x, real_y),
+            name="TabPFNClassifier",
         )
+    )
     downstream_jobs.append(
         Process(
             target=tabicl_process,

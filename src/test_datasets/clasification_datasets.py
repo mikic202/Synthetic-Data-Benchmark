@@ -86,5 +86,9 @@ def get_mushroom_clasification_dataset(test_size: float = 0.1) -> tuple[pd.DataF
     dataset, _, _, _ = openml.datasets.get_dataset(24).get_data(
         dataset_format="dataframe"
     )
+    for column in dataset.columns:
+        if dataset[column].dtype == "category":
+            dataset[column] = dataset[column].factorize()[0]
+
     dataset = dataset.rename(columns={"class": CLASYFICATION_TARGET}).astype("float32")
     return train_test_split(dataset, test_size=test_size, random_state=42)

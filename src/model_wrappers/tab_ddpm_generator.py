@@ -25,7 +25,7 @@ class TabDDPMGenerator:
         unique_y_values = len(np.unique(y_train))
         if unique_y_values == 2:
             task_type = str(TaskType.BINCLASS)
-        elif unique_y_values <= NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION:
+        elif unique_y_values <= NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION and max(unique_y_values) <= NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION:
             task_type = str(TaskType.MULTICLASS)
         else:
             task_type = str(TaskType.REGRESSION)

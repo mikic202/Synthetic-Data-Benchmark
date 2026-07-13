@@ -80,6 +80,7 @@ class ModelAuc(MetricWrapper):
         if (
             test_y.nunique() <= metrics.NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION
             and synth_y.nunique() <= metrics.NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION
+            and max(test_y.max() and synth_y.max()) <= metrics.NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION
         ):
             return metrics.calculate_auc(synth_x, synth_y, test_x, test_y)
         else:
