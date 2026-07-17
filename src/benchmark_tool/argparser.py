@@ -89,6 +89,19 @@ def parse_args():
         action="store_true",
         help="Compute how many samples are similar between real and sythetic data",
     )
+    parser.add_argument(
+        "-co",
+        "--column-order",
+        type=str,
+        choices=[
+            "c",
+            "g",
+            "f",
+            "x",
+        ],
+        default=None,
+        help="Determine which algorithm should be used to determine order in which the columns are generated\nBy default it is set to original order of the dataset",
+    )
 
     return parser.parse_args()
 

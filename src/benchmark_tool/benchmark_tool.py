@@ -17,7 +17,7 @@ from src.constants import (
     K_ANONIMITY_WITH_REAL
 )
 import tqdm
-
+from src import feature_order
 AVAILABLE_CLASSIFICATION_DATASETS = {
     "mfeat_zernike": clasification_datasets.get_mfeat_zernike_dataset,
     "pc4": clasification_datasets.get_pc4_dataset,
@@ -39,6 +39,20 @@ AVALIABLE_REGRESSION_DATASETS = {
     # "superconduct_regression": regression_datasets.get_superconduct_regression_dataset,
 }
 
+def get_column_ordering_method(ordering_option):
+    if not ordering_option:
+        return lambda data: data.columns
+    match ordering_option:
+        case "c":
+            return feature_order.generate_correlation_based_order_of_features
+        case "g":
+            return feature_order.generate_graph_based_order_of_features
+        case "r":
+            return feature_order.generate_random_forest_based_order_of_features
+        case "x":
+            return feature_order.generate_xgboost_based_order_of_features
+        case _:
+            raise Exception("Chosen feature order is incorrect")
 
 def get_clasification_model(args):
     match args.generator_type.lower():
@@ -50,7 +64,7 @@ def get_clasification_model(args):
             return CTGANGenerator()
         case "tabpfnunsupervised":
             from src.model_wrappers.full_tabpfn_gen import FullTabpfnGen
-            return FullTabpfnGen(("cuda" if torch.cuda.is_available() else "cpu"))
+            return FullTabpfnGen(("cuda" if torch.cuda.is_available() else "cpu"), column_order_getter=get_column_ordering_method(args.column_order))
         case "tabiclgen":
             from external.tab_pfn_gen.src.tabpfgen.tabpfgen import (
                 TabPFGenClassifier,
@@ -88,7 +102,7 @@ def get_regression_model(args):
             return CTGANGenerator(preprocess=True)
         case "tabpfnunsupervised":
             from src.model_wrappers.full_tabpfn_gen import FullTabpfnGen
-            return FullTabpfnGen(("cuda" if torch.cuda.is_available() else "cpu"))
+            return FullTabpfnGen(("cuda" if torch.cuda.is_available() else "cpu"), column_order_getter=get_column_ordering_method(args.column_order))
         case "tabiclgen":
             from external.tab_pfn_gen.src.tabpfgen.tabpfgen import (
                 TabPFGenRegressor,
