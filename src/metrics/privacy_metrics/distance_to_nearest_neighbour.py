@@ -31,7 +31,7 @@ def calculate_distance_to_nearest_real_record(
     model = NearestNeighbors(n_neighbors=2)
     model.fit(real_dataset[identifier_atributes])
     distances, _ = model.kneighbors(synthetic_dataset[identifier_atributes])
-    distances = distances[:, 0] / distances[:, 1]
+    distances = distances[:, 0] / (distances[:, 1] + 1e-9)
     return {
         "mean": np.mean(distances),
         "std": np.std(distances),
