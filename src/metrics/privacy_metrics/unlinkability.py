@@ -19,4 +19,6 @@ def calculate_unlinkability(
         ]
     )
     probabilities = np.exp(-distances)
+    if np.sum(probabilities) <= 1e-30:
+        return 0.0
     return entropy(probabilities / np.sum(probabilities), base=2)
