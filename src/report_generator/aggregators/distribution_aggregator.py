@@ -38,6 +38,7 @@ class DataDistributionAggregator:
             list(glob.glob(str(reference_data_path / "**/*.csv"), recursive=True))
         )
 
+
     def _groupby_dataset(self, file_paths: list[str]):
         paths_split_into_datasets = defaultdict(list)
         regex = re.compile("|".join(map(re.escape, dataset_names)))
@@ -85,7 +86,7 @@ class DataDistributionAggregator:
 
     def __call__(self) -> None:
         average_distance = defaultdict(lambda: defaultdict(list))
-        for dataset in self._reference_csv_files:
+        for dataset in dataset_names:
             for algorithm in self._csv_file_paths:
                 distribution_distances = []
                 for ref_path, synth_path in zip(

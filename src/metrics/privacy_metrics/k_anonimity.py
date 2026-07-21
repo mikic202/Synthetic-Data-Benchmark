@@ -4,7 +4,6 @@ from sklearn.metrics import silhouette_score
 import numpy as np
 from heapq import nsmallest
 import random
-from concurrent.futures import ProcessPoolExecutor
 
 MAX_NUMBER_OF_CLUSTERS = 20
 
