@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from feature_order.corelation_based_order import (
+from src.feature_order.corelation_based_order import (
     generate_correlation_based_order_of_features,
 )
 import networkx as nx
