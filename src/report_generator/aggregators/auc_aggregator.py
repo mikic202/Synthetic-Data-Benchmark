@@ -23,17 +23,32 @@ class AucAggregator:
 
     def __call__(self) -> Any:
         clasification_results = {}
+        clasification_stds = {}
         regression_results = {}
+        regression_stds = {}
         for generator_type, k_aninimity_path in zip(
             self._generator_types, self._file_paths
         ):
             with open(k_aninimity_path) as k_aninimity_file:
                 data = json.load(k_aninimity_file)
+            clasification_stds[generator_type] = data["clasification_std"]
             clasification_results[generator_type] = data["clasification_avg"]
+            regression_stds[generator_type] = data["regression_std"]
             regression_results[generator_type] = data["regression_avg"]
-        pd.DataFrame(clasification_results).to_latex(
-            self._output_path / "auc_clasification.tex"
-        )
-        pd.DataFrame(regression_results).to_latex(
+        clasification_results = pd.DataFrame(clasification_results)
+        clasification_stds = pd.DataFrame(clasification_stds)
+        (
+            clasification_results.map("${:.2f}".format)
+            + " \pm "
+            + clasification_stds.map("{:.2f}$".format)
+        ).to_latex(self._output_path / "auc_clasification.tex")
+
+        regression_results = pd.DataFrame(regression_results)
+        regression_stds = pd.DataFrame(regression_stds)
+        (
+            regression_results.map("${:.2f}".format)
+            + " \pm "
+            + regression_stds.map("{:.2f}$".format)
+        ).to_latex(
             self._output_path / "auc_regression.tex"
         )
