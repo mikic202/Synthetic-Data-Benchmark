@@ -47,7 +47,11 @@ def measure_relative_k_anonimity(real_dataset: pd.DataFrame, synthetic_dataset: 
         clusterer = KMeans(n_clusters=n_clusters, random_state=random_state)
         clusterer.fit(synthetic_dataset)
         cluster_labels = clusterer.predict(real_dataset)
-        silhouette_avg = silhouette_score(real_dataset, cluster_labels)
+        unique_labels = np.unique(cluster_labels)
+        if len(unique_labels) > 1:
+            silhouette_avg = silhouette_score(real_dataset, cluster_labels)
+        else:
+            silhouette_avg = -1.0
         smallest_ks.append(
             (silhouette_avg, np.unique(cluster_labels, return_counts=True)[1].min())
         )
