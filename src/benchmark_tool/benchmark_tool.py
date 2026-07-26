@@ -19,12 +19,12 @@ from src.constants import (
 import tqdm
 from src import feature_order
 AVAILABLE_CLASSIFICATION_DATASETS = {
-    "mfeat_zernike": clasification_datasets.get_mfeat_zernike_dataset,
-    "pc4": clasification_datasets.get_pc4_dataset,
-    "climate_model_simulation": clasification_datasets.get_climate_model_simulation_dataset,
-    "wdbc": clasification_datasets.get_wdbc_dataset,
-    "analcatdata_authorship": clasification_datasets.get_analcatdata_authorship_dataset,
-    "mushroom_clasification": clasification_datasets.get_mushroom_clasification_dataset,
+    # "mfeat_zernike": clasification_datasets.get_mfeat_zernike_dataset,
+    # "pc4": clasification_datasets.get_pc4_dataset,
+    # "climate_model_simulation": clasification_datasets.get_climate_model_simulation_dataset,
+    # "wdbc": clasification_datasets.get_wdbc_dataset,
+    # "analcatdata_authorship": clasification_datasets.get_analcatdata_authorship_dataset,
+    # "mushroom_clasification": clasification_datasets.get_mushroom_clasification_dataset,
     # "heart_diseasee_dataset": clasification_datasets.get_heart_disease_dataset,
     # "pulsar": clasification_datasets.get_pulsar_dataset,
     # "cardiovascular": clasification_datasets.get_cardiovascular_dataset,
@@ -32,7 +32,7 @@ AVAILABLE_CLASSIFICATION_DATASETS = {
 
 
 AVALIABLE_REGRESSION_DATASETS = {
-    "heart_failure_clinical_regresion": regression_datasets.get_heart_failure_clinical_regresion_dataset,
+    "forest_fires": regression_datasets.get_forest_fire_dataset,
     "sleep_deprivation_and_cognitive_performance_regression": regression_datasets.get_sleep_deprivation_and_cognitive_performance_regression_dataset,
     "house_prices_regression": regression_datasets.get_house_prices_regression_dataset,
     "abalone": regression_datasets.get_abalone_dataset,
@@ -88,6 +88,9 @@ def get_clasification_model(args):
         case "random":
             from src.model_wrappers.random_generator import RandomGenerator
             return RandomGenerator()
+        case "tabddpm":
+            from src.model_wrappers.tab_ddpm_generator import TabDDPMGenerator
+            return TabDDPMGenerator()
         case _:
             raise Exception("Chosen generator type is incorrect")
 
@@ -122,6 +125,9 @@ def get_regression_model(args):
         case "random":
             from src.model_wrappers.random_generator import RandomGenerator
             return RandomGenerator()
+        case "tabddpm":
+            from src.model_wrappers.tab_ddpm_generator import TabDDPMGenerator
+            return TabDDPMGenerator()
         case _:
             raise Exception("Chosen generator type is incorrect")
 

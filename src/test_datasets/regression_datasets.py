@@ -105,3 +105,12 @@ def get_abalone_dataset(test_size: float = 0.1):
     dataset["Sex"] = dataset["Sex"].factorize()[0]
     dataset = dataset.rename(columns={"Rings": REGRESION_TARGET}).astype("float32")
     return train_test_split(dataset, test_size=test_size, random_state=42)
+
+
+def get_forest_fire_dataset(test_size: float = 0.1):
+    path = kagglehub.dataset_download("elikplim/forest-fires-data-set")
+    dataset = pd.read_csv(path + "/forestfires.csv")
+    dataset["month"] = dataset["month"].factorize()[0]
+    dataset["day"] = dataset["day"].factorize()[0]
+    dataset = dataset.rename(columns={"area": REGRESION_TARGET}).astype("float32")
+    return train_test_split(dataset, test_size=test_size, random_state=42)
