@@ -33,7 +33,7 @@ def generate_graph_form_adjecency_matrix(
 
 
 def generate_graph_based_order_of_features(dataset: pd.DataFrame) -> list[str]:
-    correlation_matrix = dataset.corr().to_numpy()
+    correlation_matrix = np.array(dataset.corr().to_numpy(), copy=True)
     np.fill_diagonal(correlation_matrix, 0.0)
     graph = generate_graph_form_adjecency_matrix(
         correlation_matrix,
