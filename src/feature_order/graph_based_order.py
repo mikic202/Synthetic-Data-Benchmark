@@ -5,6 +5,9 @@ from src.feature_order.corelation_based_order import (
 )
 import networkx as nx
 import matplotlib.pyplot as plt
+from src.feature_order.feature_order_cache import get_feature_order_from_cache, save_feature_order_to_cache
+from pathlib import Path
+import os
 
 
 def generate_graph_form_adjecency_matrix(
@@ -33,6 +36,9 @@ def generate_graph_form_adjecency_matrix(
 
 
 def generate_graph_based_order_of_features(dataset: pd.DataFrame) -> list[str]:
+    cache_file = Path(os.path.abspath(__file__)).parent/"tmp/graph.json"
+    if cached_feature_order := get_feature_order_from_cache(list(dataset.columns), cache_file):
+        return cached_feature_order
     correlation_matrix = np.array(dataset.corr().to_numpy(), copy=True)
     np.fill_diagonal(correlation_matrix, 0.0)
     graph = generate_graph_form_adjecency_matrix(
@@ -69,4 +75,5 @@ def generate_graph_based_order_of_features(dataset: pd.DataFrame) -> list[str]:
             start_of_search = correlation_matrix_stats.pop()
             continue
         start_of_search = sorted_importance[0]
+    save_feature_order_to_cache(visited_nodes, cache_file)
     return visited_nodes

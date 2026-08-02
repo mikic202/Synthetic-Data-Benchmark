@@ -3,6 +3,10 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 from xgboost import XGBClassifier, XGBRegressor
 import pandas as pd
+from src.feature_order.feature_order_cache import get_feature_order_from_cache, save_feature_order_to_cache
+from pathlib import Path
+import os
+
 
 MAX_UNIQUE_FEATURES_AS_CATHEGORICAL = 10
 
@@ -10,8 +14,11 @@ MAX_UNIQUE_FEATURES_AS_CATHEGORICAL = 10
 def generate_random_forest_based_order_of_features(
     dataset: pd.DataFrame, ascending=True
 ) -> list[str]:
-    feature_importances = np.zeros(len(dataset.columns))
+    cache_file = Path(os.path.abspath(__file__)).parent/"tmp/random_forest.json"
+    if cached_feature_order := get_feature_order_from_cache(list(dataset.columns), cache_file):
+        return cached_feature_order
 
+    feature_importances = np.zeros(len(dataset.columns))
     for i, feature in enumerate(dataset.columns):
         if dataset[feature].nunique() <= MAX_UNIQUE_FEATURES_AS_CATHEGORICAL:
             rf = RandomForestClassifier()
@@ -22,18 +29,23 @@ def generate_random_forest_based_order_of_features(
         feature_importances[idx_to_update] += np.mean(
             [tree.feature_importances_ for tree in rf.estimators_], axis=0
         )
-    return (
+    feature_order = (
         list(reversed(dataset.columns[np.argsort(feature_importances)[::-1]].to_list()))
         if ascending
         else dataset.columns[np.argsort(feature_importances)].to_list()
     )
+    save_feature_order_to_cache(feature_order, cache_file)
+    return feature_order
 
 
 def generate_xgboost_based_order_of_features(
     dataset: pd.DataFrame, ascending=True
 ) -> list[str]:
-    feature_importances = np.zeros(len(dataset.columns))
+    cache_file = Path(os.path.abspath(__file__)).parent/"tmp/xgb.json"
+    if cached_feature_order := get_feature_order_from_cache(list(dataset.columns), cache_file):
+        return cached_feature_order
 
+    feature_importances = np.zeros(len(dataset.columns))
     n_estimators = len(dataset.columns) * 2
     max_depth = max(len(dataset.columns) // 5, 4)
 
@@ -57,8 +69,10 @@ def generate_xgboost_based_order_of_features(
         rf.fit(dataset.drop(feature, axis=1), dataset[feature])
         idx_to_update = list(range(i)) + list(range(i + 1, len(dataset.columns)))
         feature_importances[idx_to_update] += rf.feature_importances_
-    return (
+    feature_order = (
         list(reversed(dataset.columns[np.argsort(feature_importances)[::-1]].to_list()))
         if ascending
         else dataset.columns[np.argsort(feature_importances)].to_list()
     )
+    save_feature_order_to_cache(feature_order, cache_file)
+    return feature_order

@@ -1,5 +1,8 @@
 import numpy as np
 import pandas as pd
+from src.feature_order.feature_order_cache import get_feature_order_from_cache, save_feature_order_to_cache
+from pathlib import Path
+import os
 
 
 FEATURE_IMPORTANCE_ORDER = ["count", "max", "min", "sum"]
@@ -8,9 +11,14 @@ FEATURE_IMPORTANCE_ORDER = ["count", "max", "min", "sum"]
 def generate_correlation_based_order_of_features_in_dataset(
     dataset: pd.DataFrame, correlation_treshold: int = 0.2
 ) -> list[str]:
-    return generate_correlation_based_order_of_features(
+    cache_file = Path(os.path.abspath(__file__)).parent/"tmp/correlation.json"
+    if cached_feature_order := get_feature_order_from_cache(list(dataset.columns), cache_file):
+        return cached_feature_order
+    feature_order = generate_correlation_based_order_of_features(
         dataset.corr().copy(), correlation_treshold
     ).index.tolist()
+    save_feature_order_to_cache(feature_order, cache_file)
+    return feature_order
 
 
 def generate_correlation_based_order_of_features(
