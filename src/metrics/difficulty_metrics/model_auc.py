@@ -73,7 +73,6 @@ def measure_logistic_regresion_auc(
         tol=1e-3,
         max_iter=500,
         n_jobs=-1,
-        multi_class="auto",
     )
 
 
