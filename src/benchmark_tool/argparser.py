@@ -96,7 +96,7 @@ def parse_args():
         choices=[
             "c",
             "g",
-            "f",
+            "r",
             "x",
         ],
         default=None,
