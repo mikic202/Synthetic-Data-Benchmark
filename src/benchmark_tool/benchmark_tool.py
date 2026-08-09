@@ -32,11 +32,11 @@ AVAILABLE_CLASSIFICATION_DATASETS = {
 
 
 AVALIABLE_REGRESSION_DATASETS = {
-    "forest_fires": regression_datasets.get_forest_fire_dataset,
-    "sleep_deprivation_and_cognitive_performance_regression": regression_datasets.get_sleep_deprivation_and_cognitive_performance_regression_dataset,
-    "house_prices_regression": regression_datasets.get_house_prices_regression_dataset,
-    "abalone": regression_datasets.get_abalone_dataset,
-    # "superconduct_regression": regression_datasets.get_superconduct_regression_dataset,
+    # "forest_fires": regression_datasets.get_forest_fire_dataset,
+    # "sleep_deprivation_and_cognitive_performance_regression": regression_datasets.get_sleep_deprivation_and_cognitive_performance_regression_dataset,
+    # "house_prices_regression": regression_datasets.get_house_prices_regression_dataset,
+    # "abalone": regression_datasets.get_abalone_dataset,
+    "superconduct_regression": regression_datasets.get_superconduct_regression_dataset,
 }
 
 def get_column_ordering_method(ordering_option):
@@ -44,7 +44,7 @@ def get_column_ordering_method(ordering_option):
         return lambda data: data.columns
     match ordering_option:
         case "c":
-            return feature_order.generate_correlation_based_order_of_features
+            return feature_order.generate_correlation_based_order_of_features_in_dataset
         case "g":
             return feature_order.generate_graph_based_order_of_features
         case "r":
@@ -74,11 +74,12 @@ def get_clasification_model(args):
                 n_sgld_steps=100,
                 clasifier_class=TabICLClassifier,
                 regressor_class=TabICLRegressor,
+                column_order_getter=get_column_ordering_method(args.column_order)
             )
         case "tabpfngen":
             from external.tab_pfn_gen.src.tabpfgen.tabpfgen import (
                 TabPFGenClassifier)
-            return TabPFGenClassifier(n_sgld_steps=100)
+            return TabPFGenClassifier(n_sgld_steps=100, column_order_getter=get_column_ordering_method(args.column_order))
         case "nf":
             from src.model_wrappers.neural_spline_flows_generator import NeuralSplineFlowsGenerator
             return NeuralSplineFlowsGenerator()
@@ -111,11 +112,11 @@ def get_regression_model(args):
                 TabPFGenRegressor,
                 TabICLClassifier,
                 TabICLRegressor)
-            return TabPFGenRegressor(n_sgld_steps=100, clasifier_class=TabICLClassifier, regressor_class=TabICLRegressor)
+            return TabPFGenRegressor(n_sgld_steps=100, clasifier_class=TabICLClassifier, regressor_class=TabICLRegressor, column_order_getter=get_column_ordering_method(args.column_order))
         case "tabpfngen":
             from external.tab_pfn_gen.src.tabpfgen.tabpfgen import (
                 TabPFGenRegressor)
-            return TabPFGenRegressor(n_sgld_steps=100)
+            return TabPFGenRegressor(n_sgld_steps=100, column_order_getter=get_column_ordering_method(args.column_order))
         case "nf":
             from src.model_wrappers.neural_spline_flows_generator import NeuralSplineFlowsGenerator
             return NeuralSplineFlowsGenerator()
@@ -195,23 +196,31 @@ def generate_model_metrics(
     progress_bar = tqdm.tqdm(datasets.items())
     for dataset_name, dataset_getter in progress_bar:
         (current_output_path / dataset_name).mkdir(exist_ok=True, parents=True)
-        for run_number in range(number_of_repetitions):
-            progress_bar.set_description(f"Testing dataset {dataset_name}, iteration {run_number}/{number_of_repetitions}")
-            current_run_results = {}
-            train, test = dataset_getter()
-            synth = generate_samples(train, target, model)
-            synth.to_csv(current_output_path / f"{dataset_name}/{run_number}.csv")
-            for metric_name in metrics:
-                current_run_results[metric_name] = metrics[metric_name](
-                    synthetic=synth,
-                    real_train=train,
-                    real_test=test,
-                    target=target,
-                )
-            with open(
-                (current_output_path / f"{dataset_name}/{run_number}.json"), "w"
-            ) as json_file:
-                json.dump(current_run_results, json_file, indent=4)
+        run_number = 0
+        while run_number < number_of_repetitions:
+            run_number += 1
+            try:
+                progress_bar.set_description(f"Testing dataset {dataset_name}, iteration {run_number}/{number_of_repetitions}")
+                current_run_results = {}
+                train, test = dataset_getter()
+                synth = generate_samples(train, target, model)
+                synth.to_csv(current_output_path / f"{dataset_name}/{run_number}.csv")
+                torch.cuda.empty_cache()
+                for metric_name in metrics:
+                    current_run_results[metric_name] = metrics[metric_name](
+                        synthetic=synth,
+                        real_train=train,
+                        real_test=test,
+                        target=target,
+                    )
+                with open(
+                    (current_output_path / f"{dataset_name}/{run_number}.json"), "w"
+                ) as json_file:
+                    json.dump(current_run_results, json_file, indent=4)
+            except Exception as e:
+                run_number -= 1
+                print("Repeating the run", e)
+                torch.cuda.empty_cache()
 
 
 def main():
