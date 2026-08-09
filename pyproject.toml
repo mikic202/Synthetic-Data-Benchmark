@@ -10,7 +10,7 @@ dependencies = [
     "ctgan>=0.11.1",
     "huggingface-hub>=1.19.0",
     "icecream>=2.2.0",
-    "imbalanced-learn==0.14.0",
+    "imbalanced-learn>=0.14.2",
     "kagglehub>=1.0.2",
     "libzero>=0.0.8",
     "matplotlib>=3.11.0",
@@ -29,6 +29,7 @@ dependencies = [
     "tabicl>=2.1.1",
     "tabpfgen==0.1.4",
     "tabpfn>=8.0.8",
+    "tabpfn-extensions[all]",
     "toml>=0.10.2",
     "tomli>=2.4.1",
     "tomli-w>=1.2.0",
@@ -39,5 +40,9 @@ dependencies = [
 [tool.uv]
 override-dependencies = [
     "torch>=2.0.0",
-    "numpy==1.26.4"
+    "numpy==1.26.4",
+    "scikit-learn>=1.6.0"
 ]
+
+[tool.uv.sources]
+tabpfn-extensions = { git = "https://github.com/PriorLabs/tabpfn-extensions.git", rev = "v0.5.0" }
