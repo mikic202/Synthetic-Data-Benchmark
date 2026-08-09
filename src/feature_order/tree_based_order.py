@@ -6,6 +6,7 @@ import pandas as pd
 from src.feature_order.feature_order_cache import get_feature_order_from_cache, save_feature_order_to_cache
 from pathlib import Path
 import os
+from sklearn.utils.multiclass import type_of_target
 
 
 MAX_UNIQUE_FEATURES_AS_CATHEGORICAL = 10
@@ -20,7 +21,13 @@ def generate_random_forest_based_order_of_features(
 
     feature_importances = np.zeros(len(dataset.columns))
     for i, feature in enumerate(dataset.columns):
-        if dataset[feature].nunique() <= MAX_UNIQUE_FEATURES_AS_CATHEGORICAL:
+        if dataset[feature].nunique() <= MAX_UNIQUE_FEATURES_AS_CATHEGORICAL and type_of_target(dataset[feature], input_name="y") in [
+            "binary",
+            "multiclass",
+            "multiclass-multioutput",
+            "multilabel-indicator",
+            "multilabel-sequences",
+        ]:
             rf = RandomForestClassifier()
         else:
             rf = RandomForestRegressor()
@@ -50,14 +57,21 @@ def generate_xgboost_based_order_of_features(
     max_depth = max(len(dataset.columns) // 5, 4)
 
     for i, feature in enumerate(dataset.columns):
-        if dataset[feature].nunique() <= MAX_UNIQUE_FEATURES_AS_CATHEGORICAL:
+        if dataset[feature].nunique() <= MAX_UNIQUE_FEATURES_AS_CATHEGORICAL and type_of_target(dataset[feature], input_name="y") in [
+            "binary",
+            "multiclass",
+            "multiclass-multioutput",
+            "multilabel-indicator",
+            "multilabel-sequences",
+        ]:
             if dataset[feature].nunique() <= max(dataset[feature].unique()):
                 dataset[feature] = LabelEncoder().fit_transform(dataset[feature])
             rf = XGBClassifier(
                 n_estimators=n_estimators,
                 max_depth=max_depth,
                 learning_rate=1,
-                objective="binary:logistic",
+                objective="binary:logistic" if dataset[feature].nunique() <= 2 else "multi:softprob",
+                base_score=0.5,
             )
         else:
             rf = XGBRegressor(
