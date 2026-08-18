@@ -59,7 +59,7 @@ def parse_args():
         "--output-dir",
         type=Path,
         default=None,
-        help="Directory where the postprocessed benchmark results should be saved",
+        help="Directory where the postprocessed and combined benchmark results should be saved",
     )
 
     parser.add_argument(
@@ -108,9 +108,8 @@ def get_postprocessing_config(data_dir: Path, output_path: Path):
     return postprocessors
 
 
-def postprocess_single_run(input_path: Path, output_dir: Path | None):
-    if not output_dir:
-        output_dir = input_path / "processed"
+def postprocess_single_run(input_path: Path):
+    output_dir = input_path / "processed"
     output_dir.mkdir(exist_ok=True, parents=True)
     postprocessors = get_postprocessing_config(input_path, output_dir)
     raw_data = RawData(input_path)
@@ -141,12 +140,12 @@ def main():
         if args.reference_data_path
         else args.input_path
     ):
-        postprocess_single_run(input_dir, args.output_dir)
+        postprocess_single_run(input_dir)
 
-    combined_output_path = Path(".") / "combined_results"
-    combined_output_path.mkdir(exist_ok=True)
-
-    combined_path = Path("./combined_results")
+    if not args.output_dir:
+        combined_path = Path("./combined_results")
+    else:
+        combined_path = args.output_dir
     combined_path.mkdir(exist_ok=True)
 
     tested_generators = get_tested_generators(
