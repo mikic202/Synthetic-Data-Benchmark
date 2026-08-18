@@ -28,6 +28,7 @@ def generate_random_forest_based_order_of_features(
             "multilabel-indicator",
             "multilabel-sequences",
         ]:
+
             rf = RandomForestClassifier()
         else:
             rf = RandomForestRegressor()
@@ -64,6 +65,8 @@ def generate_xgboost_based_order_of_features(
             "multilabel-indicator",
             "multilabel-sequences",
         ]:
+            if 0 > min(dataset[feature].unique()):
+                dataset[feature] -= min(dataset[feature].unique())
             if dataset[feature].nunique() <= max(dataset[feature].unique()):
                 dataset[feature] = LabelEncoder().fit_transform(dataset[feature])
             rf = XGBClassifier(
