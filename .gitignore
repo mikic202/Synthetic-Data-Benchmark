@@ -13,3 +13,5 @@ wheels/
 *.tex
 *.csv
 tmp/
+*.txt
+*.npy
