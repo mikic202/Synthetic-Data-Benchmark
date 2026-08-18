@@ -11,6 +11,7 @@ import os
 from external.tabddpm.lib.util import TaskType
 import json
 import shutil
+import random
 
 
 class TabDDPMGenerator:
@@ -23,9 +24,15 @@ class TabDDPMGenerator:
         default_config = self.__load_default_config(config_filepath)
         default_config["sample"]["num_samples"] = n_samples
         unique_y_values = len(np.unique(y_train))
+
+        random_seed = random.randint(1, 1_000_000)
+        default_config["sample"]["seed"] = random_seed
+        if "seed" in default_config:
+            default_config["seed"] = random_seed
+
         if unique_y_values == 2:
             task_type = str(TaskType.BINCLASS)
-        elif unique_y_values <= NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION and max(unique_y_values) <= NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION:
+        elif unique_y_values <= NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION and max(np.unique(y_train)) <= NUMBER_OF_UNIQUE_ELEMENTS_FOR_CLASIFICATION:
             task_type = str(TaskType.MULTICLASS)
         else:
             task_type = str(TaskType.REGRESSION)
