@@ -43,6 +43,8 @@ from src.report_generator.aggregators.statistics_aggregator import (
 from src.report_generator.aggregators.distribution_aggregator import (
     DataDistributionAggregator,
 )
+from src.report_generator.postprocessors.identity_postprocessor import IdentityPostprocessor
+from src.report_generator.aggregators.identity_aggregator import IdentityAggregator
 from src.report_generator.postprocessors.auc_postprocessor import AUCPostprocessor
 from src.report_generator.aggregators.auc_aggregator import AucAggregator
 from src.report_generator.postprocessors.base_postprocessor import RawData
@@ -105,6 +107,8 @@ def get_postprocessing_config(data_dir: Path, output_path: Path):
         postprocessors.append(StatisticsPostprocessor(output_path))
     if run_params["area_under_curve"] == "True":
         postprocessors.append(AUCPostprocessor(output_path))
+    if run_params["identity"] == "True":
+        postprocessors.append(IdentityPostprocessor(output_path))
     return postprocessors
 
 
@@ -251,6 +255,16 @@ def main():
 
         elif metric == "area_under_curve":
             AucAggregator(
+                (
+                    [*args.input_path, args.reference_data_path]
+                    if args.reference_data_path
+                    else args.input_path
+                ),
+                combined_path,
+                tested_generators[metric],
+            )()
+        elif metric == "identity":
+            IdentityAggregator(
                 (
                     [*args.input_path, args.reference_data_path]
                     if args.reference_data_path
