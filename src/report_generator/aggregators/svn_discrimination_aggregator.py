@@ -9,4 +9,4 @@ class SvnDiscriminationAggregator(SingleValueAggregator):
     def __init__(
         self, input_paths: list[Path], output_path: Path, generator_types: list[str]
     ) -> None:
-        super().__init__(input_paths, output_path, generator_types, DISCRIMINATION)
+        super().__init__(input_paths, output_path, generator_types, DISCRIMINATION, "Dyskryminacja")

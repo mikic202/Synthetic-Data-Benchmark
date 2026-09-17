@@ -9,6 +9,8 @@ from src.benchmark_tool.benchmark_tool import (
 import re
 from collections import defaultdict
 from scipy.spatial.distance import jensenshannon
+import matplotlib.pyplot as plt
+from src.test_datasets.datset_utils import map_dataset_name_to_name_in_report, names_in_report
 
 dataset_names = list(AVAILABLE_CLASSIFICATION_DATASETS.keys()) + list(
     AVALIABLE_REGRESSION_DATASETS.keys()
@@ -109,6 +111,33 @@ class DataDistributionAggregator:
                     average_distance[dataset][algorithm] = np.mean(
                         distribution_distances
                     )
-        pd.DataFrame(average_distance).T.to_latex(
+        average_results =  pd.DataFrame(average_distance).T.rename(index=names_in_report).T
+        plt.figure(figsize=(14, 6))
+        for generator, row in average_results.iterrows():
+            plt.scatter(
+                average_results.columns,
+                row,
+                label=generator,
+                s=60,
+                alpha=0.8,
+            )
+        plt.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
+        plt.ylabel("Odległość od rozkładu rzeczywistego")
+        plt.xticks(rotation=90)
+        plt.tight_layout()
+        plt.savefig(self._output_path / f"{self._filename}.png", dpi=300)
+        plt.close()
+        average_results = average_results.T.round(3)
+        cl_df = average_results.loc[[idx for idx in list(map(map_dataset_name_to_name_in_report, AVAILABLE_CLASSIFICATION_DATASETS.keys())) if idx in average_results.index]]
+        reg_df = average_results.loc[[idx for idx in list(map(map_dataset_name_to_name_in_report, AVALIABLE_REGRESSION_DATASETS.keys())) if idx in average_results.index]]
+
+        combined = pd.concat(
+            {"Zadania klasyfikacji": cl_df, "Zadania regresji": reg_df}
+        )
+        combined.to_latex(
             self._output_path / f"{self._filename}.tex",
+            escape=False,
+            multicolumn=True,
+            multicolumn_format="l",
+            column_format="ll" + "c" * len(combined.columns)
         )
