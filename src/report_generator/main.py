@@ -221,11 +221,7 @@ def main():
                 tested_generators[metric],
             )()
             DistanceToNearestRealNeigbourAggregator(
-                (
-                    [*args.input_path, args.reference_data_path]
-                    if args.reference_data_path
-                    else args.input_path
-                ),
+                args.input_path,
                 combined_path,
                 tested_generators[metric],
             )()

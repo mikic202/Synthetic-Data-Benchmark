@@ -18,5 +18,5 @@ class DistanceToNearestRealNeigbourAggregator(SingleValueAggregator):
         self, input_paths: list[Path], output_path: Path, generator_types: list[str]
     ) -> None:
         super().__init__(
-            input_paths, output_path, generator_types, DISTANCE_TO_NEAREST_REAL_NEIGHBOUR
+            input_paths, output_path, generator_types, DISTANCE_TO_NEAREST_REAL_NEIGHBOUR, "Względna odległośc od przykładu rzeczywistego", refernce_generator_type=None
         )

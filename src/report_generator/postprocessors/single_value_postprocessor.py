@@ -1,10 +1,13 @@
 from pathlib import Path
+
+import scipy.stats
 from src.report_generator.postprocessors.base_postprocessor import (
     BasePostprocessor,
     RawData,
 )
 import json
 import numpy as np
+import scipy
 
 
 class SingleValuePostprocessor(BasePostprocessor):
@@ -17,28 +20,31 @@ class SingleValuePostprocessor(BasePostprocessor):
     def __call__(self, raw_data: RawData) -> None:
         averages_per_clasification_dataset = {}
         stds_per_clasification_dataset = {}
+        p_values_for_clasification = {}
         for dataset_name, dataset_results in raw_data.clasification_results[
             self._postprocessing_index
         ].items():
-            averages_per_clasification_dataset[dataset_name] = np.array(
+            dataset_results = np.array(
                 dataset_results, dtype=float
-            ).mean()
-            stds_per_clasification_dataset[dataset_name] = np.array(
-                dataset_results, dtype=float
-            ).std()
+            )
+            averages_per_clasification_dataset[dataset_name] = dataset_results.mean()
+            stds_per_clasification_dataset[dataset_name] = dataset_results.std()
+            p_values_for_clasification[dataset_name] = scipy.stats.shapiro(dataset_results).pvalue
 
         averages_per_regression_dataset = {}
         stds_per_regression_dataset = {}
+        p_values_for_regression = {}
 
         for dataset_name, dataset_results in raw_data.regression_results[
             self._postprocessing_index
         ].items():
-            averages_per_regression_dataset[dataset_name] = np.array(
+            dataset_results = np.array(
                 dataset_results, dtype=float
-            ).mean()
-            stds_per_regression_dataset[dataset_name] = np.array(
-                dataset_results, dtype=float
-            ).std()
+            )
+            averages_per_regression_dataset[dataset_name] = dataset_results.mean()
+            stds_per_regression_dataset[dataset_name] = dataset_results.std()
+            p_values_for_regression[dataset_name] = scipy.stats.shapiro(dataset_results).pvalue
+
 
         with open(self._output_path, "w") as processed_result_files:
             json.dump(
@@ -47,6 +53,8 @@ class SingleValuePostprocessor(BasePostprocessor):
                     "reg_dataset_avg": averages_per_regression_dataset,
                     "cl_dataset_std": stds_per_clasification_dataset,
                     "reg_dataset_std": stds_per_regression_dataset,
+                    "cl_p_value": p_values_for_clasification,
+                    "reg_p_value": p_values_for_regression,
                     "clasification_avg": np.mean(
                         list(averages_per_clasification_dataset.values())
                     ),
